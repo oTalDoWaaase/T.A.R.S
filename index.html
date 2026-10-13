@@ -20,6 +20,7 @@
     <link rel="preload" href="assets/images/arrival.webp" as="image" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="css/experience.css" />
+    <link rel="stylesheet" href="css/awakening.css" />
     <script src="js/data.js" defer></script>
     <script src="js/profiles.js" defer></script>
     <script src="js/explorer.js" defer></script>
@@ -104,87 +105,48 @@
             <span class="status-dot"></span> SOL III <span>·</span> TERRA /
             ORIGEM
           </div>
+          <div class="drift-reticle" aria-hidden="true">
+            <span></span><i></i>
+          </div>
           <div class="hero-copy">
-            <p class="eyebrow">UMA EXPERIÊNCIA PARA QUEM OLHA PARA CIMA</p>
+            <p class="eyebrow">TRANSMISSÃO 000 / À ESPERA DE UMA RESPOSTA</p>
             <h1 id="home-title">
-              Lá fora, o infinito.<br /><em>Aqui dentro,</em><br /><em
-                >um universo.</em
-              >
+              Você acordou<br /><em>entre dois silêncios.</em>
             </h1>
             <p class="hero-description">
-              Da Terra aos limites do universo observável.<br />Uma viagem pelo
-              desconhecido — e por aquilo<br class="desktop-break" />
-              que faz de você um explorador.
+              A Terra ainda está ali.<br />Mas alguma coisa chamou você para
+              mais longe.
             </p>
-            <div class="actions">
+            <div class="signal-entry">
+              <span class="signal-wave" aria-hidden="true"
+                ><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+              ></span>
+              <p class="mono">
+                SINAL RECEBIDO <span>·</span> ORIGEM DESCONHECIDA
+              </p>
               <button id="begin" class="primary">
-                Iniciar jornada
-                <svg class="icon"><use href="#i-arrow" /></svg></button
-              ><button id="explore" class="text-button">
-                Conhecer os horizontes
-                <svg class="icon"><use href="#i-diagonal" /></svg>
+                Iniciar jornada <svg class="icon"><use href="#i-arrow" /></svg>
               </button>
             </div>
-            <p class="hero-meta mono">
-              06 CAPÍTULOS <span>·</span> NO SEU TEMPO <span>·</span> SOM
-              OPCIONAL
-            </p>
+            <button id="explore" class="text-button">
+              Consultar os horizontes
+              <svg class="icon"><use href="#i-diagonal" /></svg>
+            </button>
           </div>
           <div class="hero-bottom">
-            <a href="#horizontes" class="scroll-cue mono"
-              ><span class="scroll-line"></span>CONTINUE A EXPLORAR</a
-            >
+            <p class="mono arrival-status">
+              <span class="status-dot"></span> CONSCIÊNCIA PRESENTE / DESTINO EM
+              ABERTO
+            </p>
             <blockquote>
-              “A primeira fronteira<br />é a que existe dentro de nós.”<cite
-                >TRANSMISSÃO 001 · ORIGEM DESCONHECIDA</cite
+              “Se você consegue me ouvir,<br />talvez não esteja tão só.”<cite
+                >FREQUÊNCIA 001 · AGUARDANDO CONTATO</cite
               >
             </blockquote>
           </div>
           <span class="hero-side mono" aria-hidden="true"
             >SINAL ENCONTRADO / CONSCIÊNCIA EM ÓRBITA</span
           >
-        </section>
-        <section
-          id="horizontes"
-          class="home-chapters"
-          aria-labelledby="horizons-title"
-        >
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">A TRAVESSIA / SEIS HORIZONTES</p>
-              <h2 id="horizons-title">
-                Tudo começa com<br /><em>uma pergunta.</em>
-              </h2>
-            </div>
-            <p>
-              Não há pressa. Nem um destino que você precise provar.<br />Apenas
-              seis horizontes, algumas descobertas<br />e a liberdade de se
-              maravilhar.
-            </p>
-          </div>
-          <div id="chapter-preview" class="chapter-preview"></div>
-          <div class="route-caption mono">
-            <span>01 / NOSSO PONTO DE PARTIDA</span
-            ><span>06 / O LIMITE DO QUE PODEMOS VER</span>
-          </div>
-        </section>
-        <section class="invitation">
-          <p class="eyebrow">ANTES DE PARTIR</p>
-          <h2>
-            Você não precisa conhecer as estrelas.<br /><em
-              >Só precisa continuar curioso.</em
-            >
-          </h2>
-          <p>
-            Uma jornada imaginativa, apoiada na ciência.<br />Coloque os fones,
-            se quiser. O silêncio também faz parte.
-          </p>
-          <button id="begin-bottom" class="outline-button">
-            Estou pronto para partir
-            <svg class="icon"><use href="#i-arrow" /></svg></button
-          ><button id="about-open" class="text-button">
-            Sobre esta experiência
-          </button>
         </section>
       </div>
       <section
@@ -446,7 +408,12 @@
           </button>
           <button id="viewer-spin" aria-pressed="false">Iniciar rotação</button
           ><button id="viewer-detail" aria-pressed="false">Iluminação</button
-          ><button id="viewer-reset">Restaurar vista</button>
+          ><button id="viewer-reset">Restaurar vista</button
+          ><button id="viewer-field" hidden aria-pressed="false">
+            Explorar campo estelar</button
+          ><button id="viewer-immerse" aria-pressed="false">
+            Mergulhar na cena
+          </button>
         </div>
         <p id="viewer-orientation" class="viewer-orientation mono"></p>
         <p id="viewer-help" class="viewer-help">
@@ -610,6 +577,9 @@
         ><input id="motion-toggle" type="checkbox" /> Reduzir movimento</label
       ><button id="fullscreen" class="outline-button">
         Alternar tela cheia <svg class="icon"><use href="#i-expand" /></svg>
+      </button>
+      <button id="about-open" class="text-button">
+        Sobre esta experiência
       </button>
     </dialog>
     <dialog

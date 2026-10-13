@@ -99,30 +99,12 @@ function imageForObject(id) {
 function updateHome() {
   $("#begin").innerHTML =
     (state.started ? "Continuar minha jornada" : "Iniciar jornada") + arrow;
-  $("#begin-bottom").innerHTML =
-    (state.started ? "Retomar de onde parei" : "Estou pronto para partir") +
-    arrow;
   $("#journal-count").textContent = pad(
     state.bookmarks.length + TARSProfiles.result(state.answers).count,
   );
   $("#journal-open").setAttribute(
     "aria-label",
     `Abrir caderno: ${state.bookmarks.length} descobertas e ${TARSProfiles.result(state.answers).count} respostas`,
-  );
-}
-function renderPreview() {
-  $("#chapter-preview").replaceChildren(
-    ...chapters.map((chapter, index) => {
-      const button = document.createElement("button");
-      button.className = "preview";
-      button.setAttribute(
-        "aria-label",
-        `Ver ${chapter.title} no mapa da jornada`,
-      );
-      button.innerHTML = `<div class="preview-image"><img src="${imagePath(chapter.image)}" alt="" loading="lazy" width="240" height="300"><span class="preview-number">${chapter.number} / 06</span><svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></div><div class="preview-copy"><strong>${chapter.title}</strong><small>${chapter.short}</small></div>`;
-      button.addEventListener("click", openMap);
-      return button;
-    }),
   );
 }
 function updateProgress() {
@@ -480,7 +462,7 @@ function openMap() {
     (state.started ? "Continuar jornada" : "Iniciar jornada") + arrow;
   openDialog("map-dialog");
 }
-function mountExplorer(id) {
+function mountExplorer(id, field = false) {
   if (explorer) explorer.destroy();
   const canvas = document.createElement("canvas");
   canvas.id = "object-canvas";
@@ -489,20 +471,49 @@ function mountExplorer(id) {
   canvas.setAttribute("role", "img");
   canvas.setAttribute(
     "aria-label",
-    `Visualização interativa de ${objects[id].name}`,
+    field
+      ? "Campo estelar ilustrativo, exploração em profundidade"
+      : `Visualização interativa de ${objects[id].name}`,
   );
   canvas.setAttribute("aria-describedby", "viewer-help");
   canvas.textContent = `Use os controles para girar e aproximar ${objects[id].name}.`;
   $("#discovery-art").replaceChildren(canvas);
+  $("#viewer-field").hidden = !["proxima", "sirio"].includes(id);
+  $("#viewer-field").setAttribute("aria-pressed", String(field));
+  $("#viewer-field").textContent = field
+    ? "Voltar à estrela"
+    : "Explorar campo estelar";
   explorer = new TARSExplorer(canvas, {
-    id,
+    id: field ? "campo" : id,
     reduced: reducedMotion(),
     onChange: updateViewer,
   });
 }
 function updateViewer(info) {
-  $("#discovery-zoom").value = String(Math.round(info.zoom * 100));
-  $("#zoom-value").textContent = info.zoom.toFixed(1).replace(".", ",") + "×";
+  const deep = info.mode !== "planet";
+  const slider = $("#discovery-zoom");
+  slider.min = deep ? "0" : "100";
+  slider.max = deep ? "1000" : "180";
+  slider.value = String(Math.round(deep ? info.depth * 100 : info.zoom * 100));
+  const names = {
+    web: "Teia cósmica",
+    galaxy: "Ilha de estrelas",
+    stellar: "Campo estelar",
+    nebula: "Nuvem interestelar",
+    horizon: "Horizonte",
+  };
+  $("#zoom-value").textContent = deep
+    ? `${names[info.layer]} · ${Math.floor(info.depth) + 1}/11`
+    : info.zoom.toFixed(1).replace(".", ",") + "×";
+  slider.setAttribute(
+    "aria-valuetext",
+    deep
+      ? `Profundidade ${info.depth.toFixed(1)} de 10, ${names[info.layer]}`
+      : `${info.zoom.toFixed(1)} vezes`,
+  );
+  $("#viewer-help").textContent = deep
+    ? "Arraste para olhar ao redor · roda ou dois dedos para mergulhar · +/− no teclado"
+    : "Arraste para girar · roda ou dois dedos para aproximar";
   $("#viewer-spin").setAttribute("aria-pressed", String(info.auto));
   $("#viewer-spin").textContent = info.auto
     ? "Pausar rotação"
@@ -529,6 +540,8 @@ function updateViewer(info) {
                 ? "Realçar disco"
                 : "Luz difusa";
   $("#viewer-detail").textContent = caption;
+  $("#viewer-detail").hidden =
+    deep && ["stellar", "nebula"].includes(info.layer);
   $("#viewer-orientation").textContent =
     info.engine === "context-lost"
       ? "VISUALIZAÇÃO INTERROMPIDA · RESTAURE OU REABRA O OBJETO"
@@ -715,7 +728,6 @@ function updateTime() {
         : `Há ${new Intl.NumberFormat("pt-BR").format(years)} anos: esta luz ainda estava a caminho.`;
 }
 $("#begin").addEventListener("click", startJourney);
-$("#begin-bottom").addEventListener("click", startJourney);
 $("#explore").addEventListener("click", openMap);
 $("#map-open").addEventListener("click", openMap);
 $("#map-continue").addEventListener("click", () => {
@@ -779,12 +791,27 @@ $(".discovery-tabs").addEventListener("keydown", (event) => {
   }
 });
 $("#discovery-zoom").addEventListener("input", () => {
-  if (explorer) explorer.setZoom(Number($("#discovery-zoom").value) / 100);
+  if (explorer) {
+    const value = Number($("#discovery-zoom").value) / 100;
+    explorer.setZoom(explorer.spec.mode ? 8 ** value : value);
+  }
 });
 $("#viewer-left").addEventListener("click", () => explorer?.turn(-0.18));
 $("#viewer-right").addEventListener("click", () => explorer?.turn(0.18));
 $("#viewer-spin").addEventListener("click", () => explorer?.toggleAuto());
 $("#viewer-detail").addEventListener("click", () => explorer?.toggleDetail());
+$("#viewer-field").addEventListener("click", () => {
+  const field = $("#viewer-field").getAttribute("aria-pressed") !== "true";
+  mountExplorer(discoveryId, field);
+  $("#object-canvas").focus({ preventScroll: true });
+});
+$("#viewer-immerse").addEventListener("click", () => {
+  const active = $("#discovery-dialog").classList.toggle("immersed");
+  $("#viewer-immerse").setAttribute("aria-pressed", String(active));
+  $("#viewer-immerse").textContent = active
+    ? "Voltar ao arquivo"
+    : "Mergulhar na cena";
+});
 $("#viewer-reset").addEventListener("click", () => explorer?.reset());
 $("#atlas-open").addEventListener("click", openAtlas);
 $("#review-answers").addEventListener("click", openJournal);
@@ -799,6 +826,9 @@ $("#skip-question").addEventListener("click", () => {
   updateQuestionFeedback(q);
 });
 $("#discovery-dialog").addEventListener("close", () => {
+  $("#discovery-dialog").classList.remove("immersed");
+  $("#viewer-immerse").setAttribute("aria-pressed", "false");
+  $("#viewer-immerse").textContent = "Mergulhar na cena";
   if (explorer) {
     explorer.destroy();
     explorer = null;
@@ -1062,13 +1092,15 @@ window.addEventListener("resize", () => {
   resizeTimer = setTimeout(drawStars, 150);
 });
 restore();
-renderPreview();
 updateHome();
 drawStars();
 updateTime();
 
 // Ao voltar de uma descoberta aberta no caderno, atualizar os favoritos exibidos.
 $("#discovery-dialog").addEventListener("close", () => {
+  $("#discovery-dialog").classList.remove("immersed");
+  $("#viewer-immerse").setAttribute("aria-pressed", "false");
+  $("#viewer-immerse").textContent = "Mergulhar na cena";
   if ($("#journal-dialog").open) {
     openJournal();
     $("#journal-title").tabIndex = -1;

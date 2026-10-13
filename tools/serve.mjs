@@ -1,5 +1,6 @@
 // Servidor estático de desenvolvimento. Não é um backend da aplicação.
 import http from "node:http";
+import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,8 +56,32 @@ const server = http.createServer(async (request, response) => {
     response.end("Arquivo não encontrado");
   }
 });
-server.listen(port, "127.0.0.1", () =>
+server.listen(port, "127.0.0.1", () => {
   console.log(
     `T.A.R.S. disponível localmente na porta ${port}. Pressione Ctrl+C para parar.`,
-  ),
-);
+  );
+  if (process.argv.includes("--open")) {
+    const address = `http://127.0.0.1:${port}/`;
+    const command =
+      process.platform === "win32"
+        ? "rundll32"
+        : process.platform === "darwin"
+          ? "open"
+          : "xdg-open";
+    const args =
+      process.platform === "win32"
+        ? ["url.dll,FileProtocolHandler", address]
+        : [address];
+    const child = spawn(command, args, { stdio: "ignore", detached: true });
+    child.on("error", () => console.log(`Abra manualmente: ${address}`));
+    child.unref();
+  }
+});
+server.on("error", (error) => {
+  console.error(
+    error.code === "EADDRINUSE"
+      ? `A porta ${port} já está ocupada. Feche a janela anterior do T.A.R.S. ou defina outra PORT.`
+      : `Não foi possível iniciar: ${error.message}`,
+  );
+  process.exitCode = 1;
+});

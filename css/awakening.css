@@ -1,0 +1,380 @@
+/* Despertar: uma cena habitável, com o sinal como único convite principal. */
+body[data-view="home"] .header {
+  background: transparent;
+  border-color: transparent;
+}
+body[data-view="home"] .brand small {
+  opacity: 0.65;
+}
+body[data-view="home"] .header nav button {
+  background: #05060b42;
+  border-color: #c1c7ef1a;
+}
+body[data-view="home"] footer {
+  display: none;
+}
+#home .hero {
+  min-height: 650px;
+  height: 100svh;
+  max-height: none;
+  padding: 0;
+}
+#home .hero-image {
+  background-position: 65% center;
+  transform-origin: 70% 40%;
+}
+#home .hero-shade {
+  background:
+    linear-gradient(90deg, #02040bb0, transparent 58%),
+    linear-gradient(0deg, #02040bd9, transparent 35%),
+    radial-gradient(ellipse at 50% 50%, transparent 50%, #02040b55);
+}
+#home .hero-copy {
+  position: absolute;
+  top: 37%;
+  left: 8vw;
+  margin: 0;
+  max-width: 480px;
+  animation: waking 2s ease both;
+}
+#home .hero .eyebrow {
+  font-size: 7px;
+  letter-spacing: 2.3px;
+  margin-bottom: 24px;
+  color: #b9b1cc;
+}
+#home .hero h1 {
+  font-size: clamp(38px, 4.1vw, 67px);
+  line-height: 1.08;
+  letter-spacing: -0.5px;
+  margin-bottom: 23px;
+  text-shadow: 0 2px 30px #0008;
+}
+#home .hero-description {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #bdc7d8;
+  margin-bottom: 30px;
+}
+.signal-entry {
+  width: min(330px, 100%);
+  border-left: 1px solid #b8a0e761;
+  padding: 5px 0 8px 22px;
+  position: relative;
+}
+.signal-entry:before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 14px;
+  width: 5px;
+  height: 5px;
+  background: #dacbf4;
+  box-shadow: 0 0 18px #be9aff;
+  border-radius: 50%;
+}
+.signal-entry p {
+  font-size: 6px;
+  letter-spacing: 1.8px;
+  color: #c7b8dc;
+  margin: 13px 0 0;
+}
+.signal-entry p span {
+  opacity: 0.5;
+}
+#home #begin {
+  background: none;
+  border: 0;
+  padding: 15px 0 5px;
+  min-height: 44px;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #ebe2f5;
+  box-shadow: none;
+}
+#home #begin:hover {
+  color: #fff;
+  text-shadow: 0 0 20px #d7b4ff;
+}
+.signal-wave {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 18px;
+}
+.signal-wave i {
+  display: block;
+  width: 2px;
+  background: #c8b5e6;
+  height: 6px;
+  animation: frequency 3s ease-in-out infinite alternate;
+}
+.signal-wave i:nth-child(2n) {
+  height: 12px;
+  animation-delay: -0.7s;
+}
+.signal-wave i:nth-child(3n) {
+  height: 18px;
+  animation-delay: -1.3s;
+}
+#home #explore {
+  margin: 15px 0 0 22px;
+  font-size: 9px;
+  color: #b1b9ca;
+  min-height: 44px;
+}
+#home .hero-coordinate {
+  top: 145px;
+  right: 5vw;
+  font-size: 7px;
+}
+#home .hero-bottom {
+  bottom: 5vh;
+  left: 5vw;
+  right: 5vw;
+  align-items: flex-end;
+}
+#home .hero-bottom blockquote {
+  font-size: 22px;
+  color: #d9d6e5;
+}
+#home .hero-bottom cite {
+  font-size: 6px;
+}
+.arrival-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #a8b5c7;
+  font-size: 6px;
+  letter-spacing: 1.5px;
+}
+#home .hero-side {
+  right: 25px;
+  font-size: 6px;
+}
+.drift-reticle {
+  position: absolute;
+  top: 46%;
+  left: 57%;
+  width: 90px;
+  height: 90px;
+  border: 1px solid #d6e5ff15;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.drift-reticle:before,
+.drift-reticle:after {
+  content: "";
+  position: absolute;
+  background: #dbe5ff44;
+}
+.drift-reticle:before {
+  width: 9px;
+  height: 1px;
+  top: 44px;
+  left: -5px;
+}
+.drift-reticle:after {
+  height: 9px;
+  width: 1px;
+  top: -5px;
+  left: 44px;
+}
+.drift-reticle span {
+  position: absolute;
+  inset: 12px;
+  border: 1px dashed #d6e5ff13;
+  border-radius: 50%;
+}
+@keyframes frequency {
+  to {
+    transform: scaleY(0.35);
+    opacity: 0.45;
+  }
+}
+@keyframes waking {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+/* O modo de mergulho abre espaço para a exploração; os controles continuam acessíveis. */
+.discovery-dialog.immersed[open] {
+  width: 100vw;
+  height: 100svh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  grid-template-columns: 1fr;
+}
+.discovery-dialog.immersed .discovery-copy {
+  display: none;
+}
+.discovery-dialog.immersed .discovery-visual {
+  height: 100svh;
+  min-height: 0;
+}
+.discovery-dialog.immersed .discovery-art {
+  height: 100svh !important;
+  margin: 0;
+}
+.discovery-dialog.immersed .viewer-tools {
+  bottom: 100px;
+}
+.discovery-dialog.immersed .zoom-control {
+  bottom: 55px;
+  left: max(25px, 20vw);
+  right: max(25px, 20vw);
+  width: auto;
+  flex-wrap: wrap;
+}
+.discovery-dialog.immersed .art-label {
+  bottom: 20px;
+}
+.discovery-dialog.immersed .viewer-orientation {
+  top: 65px;
+}
+.discovery-dialog.immersed .viewer-help {
+  top: 87px;
+  max-width: none;
+}
+@media (max-width: 800px) {
+  #home .hero {
+    min-height: 700px;
+  }
+  #home .hero-image {
+    background-position: 61% center;
+  }
+  #home .hero-copy {
+    top: 35%;
+    left: 7vw;
+    right: 7vw;
+    max-width: 430px;
+  }
+  #home .hero h1 {
+    font-size: clamp(37px, 6.8vw, 56px);
+  }
+  #home .hero-coordinate {
+    top: 112px;
+    right: 7vw;
+  }
+  #home .hero-bottom {
+    left: 7vw;
+    right: 7vw;
+    bottom: 30px;
+  }
+  #home .hero-bottom blockquote {
+    font-size: 18px;
+  }
+  .arrival-status {
+    display: none;
+  }
+  .drift-reticle {
+    left: 68%;
+    top: 25%;
+    width: 70px;
+    height: 70px;
+  }
+  #home .hero-side {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  #home .hero {
+    min-height: 660px;
+  }
+  #home .hero-image {
+    background-position: 58% center;
+    opacity: 0.85;
+  }
+  #home .hero-shade {
+    background:
+      linear-gradient(0deg, #02040bef, transparent 85%),
+      linear-gradient(90deg, #02040b66, transparent);
+  }
+  #home .hero-copy {
+    top: 34%;
+  }
+  #home .hero .eyebrow {
+    font-size: 6px;
+    letter-spacing: 1.3px;
+  }
+  #home .hero h1 {
+    font-size: clamp(34px, 9vw, 43px);
+  }
+  #home .hero-bottom {
+    justify-content: flex-end;
+    bottom: 25px;
+  }
+  #home .hero-bottom blockquote {
+    font-size: 17px;
+  }
+  #home .hero-description {
+    font-size: 11px;
+  }
+  .discovery-dialog.immersed .zoom-control {
+    left: 25px;
+    right: 25px;
+  }
+  .discovery-dialog.immersed .viewer-help {
+    right: 65px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #home .hero-copy,
+  .signal-wave i {
+    animation: none;
+  }
+}
+body.reduced-motion #home .hero-copy,
+body.reduced-motion .signal-wave i {
+  animation: none;
+}
+
+/* Os nomes dos controles permanecem acessíveis para leitores de tela. */
+body[data-view="home"] .header nav button > span:not([aria-hidden]) {
+  width: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 0.4s,
+    opacity 0.4s;
+}
+body[data-view="home"] .header nav button:hover > span:not([aria-hidden]),
+body[data-view="home"]
+  .header
+  nav
+  button:focus-visible
+  > span:not([aria-hidden]) {
+  width: auto;
+  max-width: 180px;
+  opacity: 1;
+}
+.discovery-dialog.immersed .viewer-tools button {
+  min-height: 44px;
+  font-size: 10px;
+}
+.discovery-dialog.immersed .zoom-control {
+  font-size: 9px;
+}
+.discovery-dialog.immersed #zoom-value {
+  font-size: 9px;
+}
+.discovery-dialog.immersed .viewer-help {
+  font-size: 10px;
+}
+.discovery-dialog.immersed .art-label {
+  font-size: 8px;
+}

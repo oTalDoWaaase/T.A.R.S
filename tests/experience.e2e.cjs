@@ -161,6 +161,26 @@ const assert = (value, message) => {
         }
         await page.keyboard.press("Escape");
       }
+      if (chapter === 2) {
+        await page.locator(".hotspot").first().click();
+        await page.locator("#viewer-field").click();
+        await page.locator("#discovery-zoom").fill("600");
+        await page.waitForFunction(
+          () => document.querySelector("#object-canvas").dataset.depth === "6",
+        );
+        assert(
+          (await page.locator("#viewer-note").textContent()).includes(
+            "Campo estelar ilustrativo",
+          ),
+          "star field identified as illustrative",
+        );
+        await page.locator("#viewer-field").click();
+        assert(
+          (await page.locator("#discovery-zoom").getAttribute("max")) === "180",
+          "stellar surface restored",
+        );
+        await page.keyboard.press("Escape");
+      }
       if (chapter === 3 || chapter === 4) {
         for (const index of chapter === 3 ? [0] : [0, 1]) {
           await page.locator(".hotspot").nth(index).click();
@@ -174,6 +194,28 @@ const assert = (value, message) => {
           await page.locator("#viewer-detail").click();
           const after = await page.locator("#object-canvas").screenshot();
           assert(!before.equals(after), "cosmic structure interaction");
+          await page.locator("#discovery-zoom").fill("500");
+          await page.waitForFunction(
+            () =>
+              document.querySelector("#object-canvas").dataset.depth === "5",
+          );
+          assert(
+            (await page.locator("#zoom-value").textContent()).includes("6/11"),
+            "deep slider synchronizes",
+          );
+          await page.locator("#viewer-immerse").click();
+          assert(
+            await page
+              .locator("#discovery-dialog")
+              .evaluate((e) => e.classList.contains("immersed")),
+            "cosmic immersion",
+          );
+          await page.locator("#object-canvas").focus();
+          await page.keyboard.press("Home");
+          assert(
+            (await page.locator("#discovery-zoom").inputValue()) === "0",
+            "deep reset synchronizes",
+          );
           await page.keyboard.press("Escape");
         }
       }

@@ -8,15 +8,24 @@ Uma experiência narrativa e contemplativa da Terra aos limites do universo obse
 
 Extraia a pasta e abra **`index.html`** no navegador. Os arquivos precisam permanecer juntos. Não é necessário instalar pacotes, conectar à internet ou executar um build.
 
+**Windows:** dê dois cliques em **`iniciar-tars.bat`**. Com Node.js instalado, ele inicia o servidor e abre o navegador quando a porta estiver pronta. Mantenha a janela aberta; `Ctrl+C` encerra o servidor. Sem Node.js, o atalho abre `index.html` diretamente. Extraia o ZIP antes de executar.
+
+O `.bat` é uma conveniência para iniciar o projeto, não altera a qualidade visual. Não é necessário instalar o aplicativo do ChatGPT para rodar esta experiência.
+
 Com Node.js, também é possível usar o servidor estático opcional:
 
 ```sh
-node tools/serve.mjs
+node tools/serve.mjs --open
 ```
 
 Abra a porta 8080 no navegador local. Para outra porta, configure `PORT` antes de executar. O servidor é uma ferramenta de desenvolvimento; a aplicação não tem backend.
 
 ## O que mudou nesta versão
+
+- **Despertar em órbita:** a abertura agora é uma cena de tela cheia, com uma voz esperando contato, menos texto e a Terra dominando o campo visual. Os destinos continuam no mapa, sem um catálogo para rolar na entrada.
+- **Mergulhar na cena:** cada descoberta pode ocupar toda a janela; o botão “Voltar ao arquivo” recupera os fatos e a reflexão. Escape fecha a descoberta.
+- **Zoom profundo:** teia, Via Láctea, Andrômeda, horizonte e campos estelares revelam 11 camadas de cenário, com transições contínuas entre galáxias, campos estelares e nuvens interestelares. Roda, dois dedos, teclado ou controle de profundidade permitem entrar e voltar.
+- **Atalho Windows:** `iniciar-tars.bat` abre o projeto sem comandos manuais.
 
 - O avanço de transmissão e de capítulo agora fica **dentro do painel da voz**, com uma faixa em lavanda e azul profundo. Os controles superiores seguem a mesma linguagem visual.
 - **Dez perguntas opcionais**, espalhadas pelos seis capítulos, registram escolhas e produzem um encerramento pessoal. É possível pular, revisitar e editar respostas.
@@ -28,6 +37,8 @@ Abra a porta 8080 no navegador local. Para outra porta, configure `PORT` antes d
 - As transmissões deixam mais pistas sobre a origem do sinal, preservando a revelação final.
 
 ![Transmissão com escolhas e avanço integrado](docs/vizinhanca.jpg)
+
+![Exploração da teia em modo de mergulho](docs/mergulho.jpg)
 
 ## Percorrer a experiência
 
@@ -56,8 +67,11 @@ O renderizador em `js/explorer.js` usa **WebGL nativo**, sem motor externo: proj
 - **Mouse/toque:** arraste para orbitar; dois dedos ou a roda aproximam.
 - **Teclado:** setas giram; `+`/`−` aproximam; `Home` restaura; `Espaço` alterna a rotação.
 - **Controles visíveis:** girar, iniciar/pausar, iluminação/estrutura e restaurar.
+- **Próxima Centauri e Sírio:** “Explorar campo estelar” abre um cenário procedural em profundidade; “Voltar à estrela” recupera a superfície. O campo não é um mapa da vizinhança real da estrela.
 - **Vênus:** alterna nuvens ilustrativas e mapa de superfície por radar.
 - **Galáxias:** o botão destaca os braços. **Teia:** realça ou recolhe o traçado dos filamentos.
+
+A navegação profunda é **procedural e ilustrativa**, não um levantamento real de estrelas. Seu alcance é finito (dez intervalos de profundidade, onze camadas), com sensação de mergulho prolongado. A ampliação relativa chega a `8¹⁰`; não corresponde a distâncias astronômicas ou a uma escala física exata. Cada camada tem uma semente estável: voltar recupera o mesmo cenário. As duas camadas vizinhas se sobrepõem na transição, e o cache mantém no máximo três cenários; não há geração ilimitada consumindo memória. Planetas preservam o zoom de 1× a 1,8×.
 
 As texturas são incorporadas em `assets/textures/maps.js` para permitir uso direto por `file://`, sem depender de CORS ou de serviços externos. A procedência e as licenças estão em `assets/textures/SOURCES.md`.
 
@@ -90,6 +104,8 @@ assets/textures/            Mapas incorporados, fontes e licença MIT
 assets/fonts/              Fontes locais e licenças OFL
 assets/audio/              Trilha original, documentação e CC0
 docs/                      Prévias da interface
+css/awakening.css          Abertura cinematográfica e modo de mergulho
+iniciar-tars.bat            Atalho de abertura no Windows
 tools/serve.mjs             Servidor estático opcional
 tools/compose-audio.mjs     Gerador original da trilha
 tests/                     Verificações de navegador e de perfis
@@ -135,8 +151,11 @@ node tools/serve.mjs
 # Em outro terminal:
 node tests/e2e.cjs
 node tests/experience.e2e.cjs
+node tests/deep-exploration.e2e.cjs
 ```
 
 Use `CHROMIUM_PATH` para um Chromium já instalado e `TARS_BASE_URL` para outro servidor/porta. As capturas ficam em `test-results`, ignorado pelo Git.
 
 As verificações cobrem jornada completa, mapas bloqueados, responsividade de 320 a 1440 px, foco, perguntas, resultados, revisão/retomada/exportação, planetas, interação 3D, alternativa sem WebGL, reprodução real do MP3 e ausência de autoplay. Fontes e créditos científicos/artísticos estão em `assets/CREDITS.md`.
+
+O servidor e seus pedidos HTTP foram verificados no ambiente Linux. O arquivo `.bat` foi revisado, mas não executado no Windows neste ambiente.

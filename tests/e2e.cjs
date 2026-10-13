@@ -82,8 +82,10 @@ const assert = (condition, message) => {
       );
       await page.locator("#discovery-zoom").fill("160");
       assert(
-        (await page.locator("#zoom-value").textContent()) === "1,6×",
-        "zoom",
+        (await page.locator("#discovery-zoom").getAttribute("max")) === "180"
+          ? (await page.locator("#zoom-value").textContent()) === "1,6×"
+          : (await page.locator("#zoom-value").textContent()).includes("2/11"),
+        "planet zoom or cosmic depth",
       );
       await page.locator("#reflection-tab").click();
       assert(

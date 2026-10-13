@@ -80,6 +80,10 @@ window.TARSExplorer = (() => {
       rings: true,
       note: "Representação artística · não é simulação relativística",
     },
+    campo: {
+      mode: "stellar",
+      note: "Campo estelar ilustrativo · não mapeia a posição real desta estrela",
+    },
     vialactea: {
       mode: "galaxy",
       note: "Galáxia espiral ilustrativa · não é fotografia da Via Láctea",
@@ -190,8 +194,8 @@ window.TARSExplorer = (() => {
       }
       gl_FragColor=vec4(col,alpha);
     }`;
-  const particleVertex = `attribute vec3 a_position;attribute vec3 a_color;uniform mat3 u_rotation;uniform float u_zoom,u_aspect,u_size;varying vec3 v_color;void main(){vec3 p=u_rotation*a_position;float depth=4.8-p.z;gl_Position=vec4(p.x/depth*u_zoom*1.4/u_aspect,p.y/depth*u_zoom*1.4,0.,1.);gl_PointSize=clamp(u_size*4.8/depth,1.,8.);v_color=a_color;}`;
-  const particleFragment = `precision mediump float;varying vec3 v_color;uniform float u_lines;void main(){float d=length(gl_PointCoord-.5);float alpha=u_lines>.5?.23:exp(-d*d*18.);if(u_lines<.5&&d>.5)discard;gl_FragColor=vec4(v_color,alpha);}`;
+  const particleVertex = `attribute vec3 a_position;attribute vec3 a_color;uniform mat3 u_rotation;uniform float u_zoom,u_aspect,u_size;varying vec3 v_color;void main(){vec3 p=u_rotation*a_position;float depth=4.8-p.z;gl_Position=vec4(p.x/depth*u_zoom*1.4/u_aspect,p.y/depth*u_zoom*1.4,0.,1.);gl_PointSize=clamp(u_size*4.8/depth,1.,22.);v_color=a_color;}`;
+  const particleFragment = `precision mediump float;varying vec3 v_color;uniform float u_lines,u_opacity;void main(){float d=length(gl_PointCoord-.5);float alpha=u_lines>.5?.23:exp(-d*d*18.);if(u_lines<.5&&d>.5)discard;gl_FragColor=vec4(v_color,alpha*u_opacity);}`;
   function makeProgram(gl, vs, fs) {
     const compile = (type, source) => {
       const shader = gl.createShader(type);
@@ -216,8 +220,8 @@ window.TARSExplorer = (() => {
       throw Error(gl.getProgramInfoLog(program));
     return program;
   }
-  function clouds(mode) {
-    let seed = mode === "web" ? 193 : 91;
+  function clouds(mode, variation = 0) {
+    let seed = (mode === "web" ? 193 : 91) + variation * 7919;
     const random = () => {
       seed = (seed * 16807) % 2147483647;
       return (seed - 1) / 2147483646;
@@ -262,6 +266,41 @@ window.TARSExplorer = (() => {
           }
         });
       });
+    } else if (mode === "stellar" || mode === "nebula") {
+      // New deterministic scenery at each depth. This is an artistic journey,
+      // not an astronomical catalogue or a physical scale model.
+      for (let i = 0; i < 5200; i++) {
+        const angle = random() * Math.PI * 2;
+        const radius = Math.pow(random(), 0.65) * 2.8;
+        const dust = mode === "nebula" && i % 3 !== 0;
+        const x = Math.cos(angle) * radius;
+        const y = dust
+          ? Math.sin(x * 2.2 + variation) * 0.45 + (random() - 0.5) * 0.35
+          : (random() - 0.5) * 3.4;
+        const z = Math.sin(angle) * radius;
+        const warm = random();
+        add(
+          x,
+          y,
+          z,
+          dust ? 0.34 + warm * 0.22 : 0.65 + warm * 0.35,
+          dust ? 0.3 + warm * 0.15 : 0.65 + warm * 0.3,
+          dust ? 0.65 + warm * 0.25 : 0.8 + warm * 0.2,
+        );
+      }
+      // A central cluster anchors the next descent, so no level becomes empty.
+      for (let i = 0; i < 500; i++) {
+        const radius = Math.pow(random(), 2) * 0.25,
+          a = random() * Math.PI * 2;
+        add(
+          Math.cos(a) * radius,
+          (random() - 0.5) * radius,
+          Math.sin(a) * radius,
+          0.8,
+          0.85,
+          1,
+        );
+      }
     } else if (mode === "horizon") {
       for (let i = 0; i < 2600; i++) {
         const a = random() * Math.PI * 2,
@@ -338,7 +377,8 @@ window.TARSExplorer = (() => {
       this.pointers = new Map();
       this.listeners = [];
       this.resources = [];
-      if (this.spec.mode) this.cloud = clouds(this.spec.mode);
+      this.layers = new Map();
+      if (this.spec.mode) this.cloud = this.layer(0);
       try {
         this.gl = canvas.getContext("webgl", {
           alpha: true,
@@ -386,6 +426,36 @@ window.TARSExplorer = (() => {
               this.update();
             }
           });
+    }
+    layer(index) {
+      if (!this.layers.has(index)) {
+        const modes =
+          this.spec.mode === "web" || this.spec.mode === "horizon"
+            ? [this.spec.mode, "galaxy", "stellar", "nebula"]
+            : this.spec.mode === "stellar"
+              ? ["stellar", "nebula", "stellar"]
+              : ["galaxy", "stellar", "nebula"];
+        const mode = modes[index] || (index % 2 ? "nebula" : "stellar");
+        this.layers.set(index, { ...clouds(mode, index), mode, index });
+      }
+      return this.layers.get(index);
+    }
+    depthScene() {
+      const depth = Math.log(this.zoom) / Math.log(8);
+      const index = Math.min(9, Math.floor(depth));
+      const fraction = depth - index;
+      const t = Math.max(0, Math.min(1, (fraction - 0.2) / 0.8));
+      const blend = t * t * (3 - 2 * t);
+      for (const key of this.layers.keys())
+        if (key < index - 1 || key > index + 1) this.layers.delete(key);
+      return [
+        { cloud: this.layer(index), zoom: 8 ** fraction, opacity: 1 - blend },
+        {
+          cloud: this.layer(index + 1),
+          zoom: 8 ** (fraction - 1),
+          opacity: blend,
+        },
+      ];
     }
     setupGL() {
       const gl = this.gl;
@@ -482,10 +552,7 @@ window.TARSExplorer = (() => {
               event.clientY - other.y,
             );
           if (oldDistance > 5)
-            this.zoom = Math.max(
-              1,
-              Math.min(1.8, (this.zoom * newDistance) / oldDistance),
-            );
+            this.setZoom((this.zoom * newDistance) / oldDistance);
         } else {
           this.yaw += (event.clientX - before.x) * 0.009;
           this.pitch = Math.max(
@@ -508,7 +575,11 @@ window.TARSExplorer = (() => {
         "wheel",
         (event) => {
           event.preventDefault();
-          this.setZoom(this.zoom - event.deltaY * 0.0015);
+          this.setZoom(
+            this.cloud
+              ? this.zoom * Math.exp(-event.deltaY * 0.003)
+              : this.zoom - event.deltaY * 0.0015,
+          );
         },
         { passive: false },
       );
@@ -536,8 +607,9 @@ window.TARSExplorer = (() => {
         if (event.key === "ArrowDown")
           this.pitch = Math.min(1.55, this.pitch + 0.12);
         if (event.key === "+" || event.key === "=")
-          this.setZoom(this.zoom + 0.1);
-        if (event.key === "-") this.setZoom(this.zoom - 0.1);
+          this.setZoom(this.cloud ? this.zoom * 1.5 : this.zoom + 0.1);
+        if (event.key === "-")
+          this.setZoom(this.cloud ? this.zoom / 1.5 : this.zoom - 0.1);
         if (event.key === "Home") this.reset();
         if (event.key === " ") this.toggleAuto();
         this.update();
@@ -579,7 +651,15 @@ window.TARSExplorer = (() => {
         zoom: this.zoom,
         auto: this.auto,
         detail: this.detail,
-        note: this.spec.note,
+        note: this.cloud
+          ? `${this.spec.note} · exploração procedural em camadas`
+          : this.spec.note,
+        depth: this.cloud ? Math.log(this.zoom) / Math.log(8) : 0,
+        layer: this.cloud
+          ? this.layer(
+              Math.min(10, Math.floor(Math.log(this.zoom) / Math.log(8))),
+            ).mode
+          : null,
         mode: this.spec.mode || "planet",
         engine: this.canvas.dataset.engine,
         texture: this.canvas.dataset.texture || "loading",
@@ -611,7 +691,13 @@ window.TARSExplorer = (() => {
       if (this.auto) this.frame = requestAnimationFrame((t) => this.tick(t));
     }
     setZoom(value) {
-      this.zoom = Math.max(1, Math.min(1.8, value));
+      this.zoom = Math.max(
+        1,
+        Math.min(
+          this.cloud ? 8 ** 10 : 1.8,
+          Number.isFinite(value) ? value : 1,
+        ),
+      );
       this.update();
     }
     turn(amount) {
@@ -670,25 +756,43 @@ window.TARSExplorer = (() => {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         const color = gl.getAttribLocation(this.program, "a_color");
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.enableVertexAttribArray(color);
-        gl.vertexAttribPointer(color, 3, gl.FLOAT, false, 0, 0);
-        gl.uniform1f(
-          uniform("u_size"),
-          Math.min(devicePixelRatio || 1, 1.5) *
-            (this.detail && this.spec.mode === "horizon" ? 4.2 : 2.4),
-        );
-        gl.uniform1f(uniform("u_lines"), 0);
-        gl.drawArrays(gl.POINTS, 0, this.cloud.points.length / 3);
-        if (this.detail && this.cloud.lines.length) {
-          gl.bindBuffer(gl.ARRAY_BUFFER, this.lineBuffer);
+        for (const scene of this.depthScene()) {
+          if (scene.opacity <= 0) continue;
+          // Reuse three GPU buffers; only the two neighboring levels are drawn.
+          gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+          gl.bufferData(gl.ARRAY_BUFFER, scene.cloud.points, gl.DYNAMIC_DRAW);
           gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 0, 0);
-          gl.disableVertexAttribArray(color);
-          gl.vertexAttrib3f(color, 0.6, 0.65, 0.9);
-          gl.uniform1f(uniform("u_lines"), 1);
-          gl.drawArrays(gl.LINES, 0, this.cloud.lines.length / 3);
+          gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+          gl.bufferData(gl.ARRAY_BUFFER, scene.cloud.colors, gl.DYNAMIC_DRAW);
+          gl.enableVertexAttribArray(color);
+          gl.vertexAttribPointer(color, 3, gl.FLOAT, false, 0, 0);
+          gl.uniform1f(uniform("u_zoom"), scene.zoom);
+          gl.uniform1f(uniform("u_opacity"), scene.opacity);
+          gl.uniform1f(
+            uniform("u_size"),
+            Math.min(devicePixelRatio || 1, 1.5) *
+              (scene.cloud.mode === "nebula"
+                ? 12
+                : scene.cloud.mode === "stellar"
+                  ? 3.6
+                  : 2.8),
+          );
+          gl.uniform1f(uniform("u_lines"), 0);
+          gl.drawArrays(gl.POINTS, 0, scene.cloud.points.length / 3);
+          if (this.detail && scene.cloud.lines.length) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.lineBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, scene.cloud.lines, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 0, 0);
+            gl.disableVertexAttribArray(color);
+            gl.vertexAttrib3f(color, 0.6, 0.65, 0.9);
+            gl.uniform1f(uniform("u_lines"), 1);
+            gl.drawArrays(gl.LINES, 0, scene.cloud.lines.length / 3);
+          }
         }
         gl.disable(gl.BLEND);
+        this.canvas.dataset.depth = String(
+          Math.floor(Math.log(this.zoom) / Math.log(8)),
+        );
       } else {
         gl.uniform3fv(uniform("u_color"), this.spec.color || [0.6, 0.7, 0.9]);
         gl.uniform1f(uniform("u_spin"), this.spin);
@@ -711,31 +815,39 @@ window.TARSExplorer = (() => {
         r = rotation(this.yaw, this.pitch);
       ctx.clearRect(0, 0, w, h);
       if (this.cloud) {
-        const project = (x, y, z) => {
-          const a = r[0] * x + r[3] * y + r[6] * z,
-            b = r[1] * x + r[4] * y + r[7] * z,
-            c = r[2] * x + r[5] * y + r[8] * z;
-          const scale = ((h / 2) * this.zoom * 1.4) / (4.8 - c);
-          return [w / 2 + a * scale, h / 2 - b * scale];
-        };
-        if (this.detail) {
-          ctx.strokeStyle = "#988de045";
-          ctx.beginPath();
-          for (let i = 0; i < this.cloud.lines.length; i += 6) {
-            const a = project(...this.cloud.lines.subarray(i, i + 3)),
-              b = project(...this.cloud.lines.subarray(i + 3, i + 6));
-            ctx.moveTo(...a);
-            ctx.lineTo(...b);
+        for (const scene of this.depthScene()) {
+          if (scene.opacity <= 0) continue;
+          ctx.globalAlpha = scene.opacity;
+          const project = (x, y, z) => {
+            const a = r[0] * x + r[3] * y + r[6] * z,
+              b = r[1] * x + r[4] * y + r[7] * z,
+              c = r[2] * x + r[5] * y + r[8] * z;
+            const scale = ((h / 2) * scene.zoom * 1.4) / (4.8 - c);
+            return [w / 2 + a * scale, h / 2 - b * scale];
+          };
+          if (this.detail) {
+            ctx.strokeStyle = "#988de045";
+            ctx.beginPath();
+            for (let i = 0; i < scene.cloud.lines.length; i += 6) {
+              const a = project(...scene.cloud.lines.subarray(i, i + 3)),
+                b = project(...scene.cloud.lines.subarray(i + 3, i + 6));
+              ctx.moveTo(...a);
+              ctx.lineTo(...b);
+            }
+            ctx.stroke();
           }
-          ctx.stroke();
+          const p = scene.cloud.points,
+            c = scene.cloud.colors;
+          for (let i = 0; i < p.length; i += 3) {
+            const [x, y] = project(p[i], p[i + 1], p[i + 2]);
+            ctx.fillStyle = `rgba(${c[i] * 255},${c[i + 1] * 255},${c[i + 2] * 255},.65)`;
+            ctx.fillRect(x, y, 1.5, 1.5);
+          }
         }
-        const p = this.cloud.points,
-          c = this.cloud.colors;
-        for (let i = 0; i < p.length; i += 3) {
-          const [x, y] = project(p[i], p[i + 1], p[i + 2]);
-          ctx.fillStyle = `rgba(${c[i] * 255},${c[i + 1] * 255},${c[i + 2] * 255},.65)`;
-          ctx.fillRect(x, y, 1.5, 1.5);
-        }
+        ctx.globalAlpha = 1;
+        this.canvas.dataset.depth = String(
+          Math.floor(Math.log(this.zoom) / Math.log(8)),
+        );
       } else {
         const size = 240,
           aspect = w / h,
