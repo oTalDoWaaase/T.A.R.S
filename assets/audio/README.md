@@ -1,1 +1,5 @@
-Insira aqui sua trilha licenciada, opcionalmente `ambiente.mp3`, e configure AUDIO_FILE em script.js. A V1 já oferece som sintetizado sem arquivo. Nunca reproduzir automaticamente.
+# Trilha ambiente opcional
+
+A experiência já utiliza uma ambientação original sintetizada no navegador, sem arquivo de áudio externo. Para substituí-la, insira uma trilha licenciada aqui e preencha `AUDIO_FILE` em `script.js`, por exemplo `./assets/audio/ambiente.mp3`.
+
+O controle mantém volume, mute e reprodução apenas por escolha do visitante. Registre autor, origem e licença em `assets/CREDITS.md`. Não use trilhas de filmes sem autorização.

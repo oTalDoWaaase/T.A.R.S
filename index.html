@@ -1,38 +1,605 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#05060b">
-  <meta name="description" content="Uma jornada contemplativa da Terra aos limites do universo observável. Seis capítulos para descobrir o cosmos — e quem o observa.">
-  <title>T.A.R.S. — A Jornada</title>
-  <link rel="stylesheet" href="style.css"><script src="script.js" defer></script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Ir para a jornada</a>
-  <div class="space" aria-hidden="true"><canvas id="stars"></canvas><div class="nebula"></div><div class="orbital"></div></div>
-  <header class="header">
-    <a class="brand" href="#inicio" aria-label="T.A.R.S. — início">T.A.R.S.<span>A JORNADA</span></a>
-    <nav aria-label="Navegação principal"><button id="map-open">Mapa da jornada <span aria-hidden="true">↗</span></button><div class="sound"><button id="sound-toggle" aria-pressed="false"><span aria-hidden="true">≋</span> <span id="sound-label">Som desligado</span></button><label class="volume">Volume<input id="volume" type="range" min="0" max="100" value="30" aria-label="Volume da trilha ambiente"></label></div></nav>
-  </header>
-  <main id="main" tabindex="-1">
-    <section id="home" class="home view" aria-labelledby="home-title">
-      <div class="home-art" aria-hidden="true"><div class="earth planet"></div><span class="art-coordinate">SOL III · 23° 26′</span></div>
-      <div class="hero-copy"><p class="eyebrow"><span class="signal"></span> UMA EXPEDIÇÃO PARA DENTRO DO INFINITO</p><h1 id="home-title">O universo é imenso.<br><em>E você está aqui.</em></h1><p class="intro">T.A.R.S. — A Jornada<br>Da Terra aos limites do universo observável.<br>Uma travessia pelo espaço. Um encontro com você.</p><div class="actions"><button class="primary" id="begin">Iniciar jornada <span aria-hidden="true">↗</span></button><button class="text-button" id="explore">Explorar capítulos <span aria-hidden="true">↓</span></button></div><p class="quiet">6 capítulos · no seu ritmo · fones são bem-vindos</p></div>
-      <div class="home-bottom"><p>“Talvez a distância seja apenas<br>outra maneira de nos encontrarmos.”<span>TRANSMISSÃO 001 / ORIGEM DESCONHECIDA</span></p><div class="telemetry"><span>LOCALIZAÇÃO ATUAL</span><strong>Terra, Sistema Solar</strong><span>UM PEQUENO COMEÇO. UM VASTO DESTINO.</span></div></div>
-      <div id="chapter-preview" class="chapter-preview" aria-label="Os seis destinos"></div>
-    </section>
-    <section id="journey" class="journey view" hidden aria-labelledby="chapter-title">
-      <div class="chapter-heading"><p id="chapter-label" class="eyebrow"></p><h1 id="chapter-title" tabindex="-1"></h1><p id="chapter-description" class="intro"></p></div>
-      <div id="scene" class="scene" aria-label="Objetos para explorar"></div>
-      <div class="narrative"><p class="eyebrow">TRANSMISSÃO DE BORDO</p><blockquote id="narration"></blockquote><p id="science-note" class="science-note"></p></div>
-      <div class="journey-controls"><button id="previous" class="text-button">← Capítulo anterior</button><div id="progress" class="progress" aria-label="Progresso da jornada"></div><button id="next" class="primary">Próximo horizonte <span aria-hidden="true">→</span></button></div>
-      <span id="easter-egg" hidden title="Para quem permanece curioso.">L.E. / ∞</span>
-    </section>
-  </main>
-  <dialog id="map-dialog" class="map-dialog" aria-labelledby="map-title"><button class="close" data-close="map-dialog" aria-label="Fechar mapa">×</button><p class="eyebrow">CARTA DE NAVEGAÇÃO / 06 DESTINOS</p><h2 id="map-title">Mapa da Jornada</h2><p class="dialog-intro">O horizonte se abre um passo de cada vez.</p><div id="map-nodes" class="map-nodes"></div><p class="map-legend"><span>●</span> Conhecido <span>◉</span> Localização atual <span>○</span> Ainda por descobrir</p><button id="map-continue" class="primary">Continuar jornada →</button></dialog>
-  <dialog id="discovery-dialog" class="discovery-dialog" aria-labelledby="discovery-title"><button class="close" data-close="discovery-dialog" aria-label="Fechar descoberta">×</button><div id="discovery-art" class="discovery-art" aria-hidden="true"></div><div class="discovery-copy"><p class="eyebrow">REGISTRO DE DESCOBERTA</p><h2 id="discovery-title"></h2><p id="discovery-subtitle" class="poetic"></p><p id="discovery-description"></p><dl id="discovery-facts" class="facts"></dl><p id="discovery-reflection" class="reflection"></p><a id="discovery-source" target="_blank" rel="noopener noreferrer">Aprofundar · fonte científica ↗</a><button class="primary" data-close="discovery-dialog">Continuar exploração →</button></div></dialog>
-  <p id="status" class="sr-only" role="status"></p>
-  <noscript><p class="no-script">Ative o JavaScript para percorrer os capítulos. Esta jornada é uma experiência interativa local, sem coleta de dados.</p></noscript>
-  <footer><span>UMA JORNADA EXTERIOR. UM DESPERTAR INTERIOR.</span><span>T.A.R.S. © 2026 · EXPERIÊNCIA AUTORAL</span></footer>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#05060b" />
+    <meta
+      name="description"
+      content="Desperte à deriva. Atravesse seis horizontes. Uma experiência narrativa da Terra aos limites do universo observável — e para dentro de você."
+    />
+    <title>T.A.R.S. — A Jornada</title>
+    <link
+      rel="preload"
+      href="assets/fonts/cormorant.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <link rel="preload" href="assets/images/arrival.webp" as="image" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="js/data.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body data-view="home">
+    <svg class="icon-library" aria-hidden="true">
+      <defs>
+        <symbol id="i-arrow" viewBox="0 0 24 24">
+          <path d="M4 12h15M13 5l7 7-7 7" />
+        </symbol>
+        <symbol id="i-diagonal" viewBox="0 0 24 24">
+          <path d="M5 19 19 5M5 5h14v14" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2V5ZM9 3v15M15 6v15" />
+        </symbol>
+        <symbol id="i-sound" viewBox="0 0 24 24">
+          <path
+            d="M3 10h4l5-5v14l-5-5H3v-4ZM16 8c2 2 2 6 0 8M19 5c4 4 4 10 0 14"
+          />
+        </symbol>
+        <symbol id="i-book" viewBox="0 0 24 24">
+          <path
+            d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"
+          />
+        </symbol>
+        <symbol id="i-close" viewBox="0 0 24 24">
+          <path d="m6 6 12 12M6 18 18 6" />
+        </symbol>
+        <symbol id="i-expand" viewBox="0 0 24 24">
+          <path d="M9 3H3v6M15 3h6v6M21 15v6h-6M3 15v6h6" />
+        </symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24">
+          <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+      </defs>
+    </svg>
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
+    <div class="universe" aria-hidden="true">
+      <canvas id="starfield"></canvas>
+      <div class="grain"></div>
+    </div>
+    <header class="header">
+      <a class="brand" href="#inicio" aria-label="T.A.R.S. — página inicial"
+        ><span class="brand-mark" aria-hidden="true">✳</span
+        ><span>T.A.R.S.<small>A JORNADA</small></span></a
+      >
+      <nav aria-label="Navegação principal">
+        <button id="map-open">
+          <svg class="icon"><use href="#i-map" /></svg
+          ><span>Mapa da jornada</span></button
+        ><button id="journal-open" aria-label="Abrir caderno de bordo">
+          <svg class="icon"><use href="#i-book" /></svg
+          ><span class="desktop-label">Caderno de bordo</span
+          ><small id="journal-count">00</small></button
+        ><button
+          id="sound-toggle"
+          aria-pressed="false"
+          aria-label="Ligar som ambiente"
+        >
+          <svg class="icon"><use href="#i-sound" /></svg
+          ><span id="sound-label" class="desktop-label"
+            >Som desligado</span
+          ></button
+        ><button
+          id="settings-open"
+          class="icon-button"
+          aria-label="Preferências de som e movimento"
+        >
+          <span aria-hidden="true">•••</span>
+        </button>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1">
+      <div id="home" class="view">
+        <section class="hero" aria-labelledby="home-title">
+          <div class="hero-image" aria-hidden="true"></div>
+          <div class="hero-shade" aria-hidden="true"></div>
+          <div class="hero-coordinate mono">
+            <span class="status-dot"></span> SOL III <span>·</span> TERRA /
+            ORIGEM
+          </div>
+          <div class="hero-copy">
+            <p class="eyebrow">UMA EXPERIÊNCIA PARA QUEM OLHA PARA CIMA</p>
+            <h1 id="home-title">
+              Lá fora, o infinito.<br /><em>Aqui dentro,</em><br /><em
+                >um universo.</em
+              >
+            </h1>
+            <p class="hero-description">
+              Da Terra aos limites do universo observável.<br />Uma viagem pelo
+              desconhecido — e por aquilo<br class="desktop-break" />
+              que faz de você um explorador.
+            </p>
+            <div class="actions">
+              <button id="begin" class="primary">
+                Iniciar jornada
+                <svg class="icon"><use href="#i-arrow" /></svg></button
+              ><button id="explore" class="text-button">
+                Conhecer os horizontes
+                <svg class="icon"><use href="#i-diagonal" /></svg>
+              </button>
+            </div>
+            <p class="hero-meta mono">
+              06 CAPÍTULOS <span>·</span> NO SEU TEMPO <span>·</span> SOM
+              OPCIONAL
+            </p>
+          </div>
+          <div class="hero-bottom">
+            <a href="#horizontes" class="scroll-cue mono"
+              ><span class="scroll-line"></span>CONTINUE A EXPLORAR</a
+            >
+            <blockquote>
+              “A primeira fronteira<br />é a que existe dentro de nós.”<cite
+                >TRANSMISSÃO 001 · ORIGEM DESCONHECIDA</cite
+              >
+            </blockquote>
+          </div>
+          <span class="hero-side mono" aria-hidden="true"
+            >SINAL ENCONTRADO / CONSCIÊNCIA EM ÓRBITA</span
+          >
+        </section>
+        <section
+          id="horizontes"
+          class="home-chapters"
+          aria-labelledby="horizons-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">A TRAVESSIA / SEIS HORIZONTES</p>
+              <h2 id="horizons-title">
+                Tudo começa com<br /><em>uma pergunta.</em>
+              </h2>
+            </div>
+            <p>
+              Não há pressa. Nem um destino que você precise provar.<br />Apenas
+              seis horizontes, algumas descobertas<br />e a liberdade de se
+              maravilhar.
+            </p>
+          </div>
+          <div id="chapter-preview" class="chapter-preview"></div>
+          <div class="route-caption mono">
+            <span>01 / NOSSO PONTO DE PARTIDA</span
+            ><span>06 / O LIMITE DO QUE PODEMOS VER</span>
+          </div>
+        </section>
+        <section class="invitation">
+          <p class="eyebrow">ANTES DE PARTIR</p>
+          <h2>
+            Você não precisa conhecer as estrelas.<br /><em
+              >Só precisa continuar curioso.</em
+            >
+          </h2>
+          <p>
+            Uma jornada imaginativa, apoiada na ciência.<br />Coloque os fones,
+            se quiser. O silêncio também faz parte.
+          </p>
+          <button id="begin-bottom" class="outline-button">
+            Estou pronto para partir
+            <svg class="icon"><use href="#i-arrow" /></svg></button
+          ><button id="about-open" class="text-button">
+            Sobre esta experiência
+          </button>
+        </section>
+      </div>
+      <section
+        id="journey"
+        class="view journey"
+        hidden
+        aria-labelledby="chapter-title"
+      >
+        <div id="chapter-image" class="chapter-image" aria-hidden="true"></div>
+        <div class="chapter-shade" aria-hidden="true"></div>
+        <div class="chapter-top">
+          <p id="chapter-label" class="eyebrow"></p>
+          <div class="scene-tools">
+            <button id="scale-open" class="tool-button">
+              Nossa escala
+              <svg class="icon"><use href="#i-diagonal" /></svg></button
+            ><button id="contemplate" class="tool-button" aria-pressed="false">
+              <svg class="icon"><use href="#i-eye" /></svg
+              ><span>Contemplar</span>
+            </button>
+          </div>
+        </div>
+        <div class="chapter-copy">
+          <p id="chapter-location" class="mono chapter-location"></p>
+          <h1 id="chapter-title" tabindex="-1"></h1>
+          <p id="chapter-description" class="chapter-description"></p>
+        </div>
+        <div
+          id="scene"
+          class="scene"
+          aria-label="Objetos cósmicos para descobrir"
+        ></div>
+        <div id="time-lens" class="time-lens" hidden>
+          <label for="light-time" class="eyebrow"
+            >LENTE DO TEMPO / A LUZ DE ANDRÔMEDA</label
+          ><input
+            type="range"
+            id="light-time"
+            min="0"
+            max="250"
+            value="250"
+            aria-label="Tempo da viagem da luz, em dezenas de milhares de anos"
+          />
+          <p id="time-readout">
+            Há 2,5 milhões de anos: esta luz deixou Andrômeda.
+          </p>
+          <span class="mono"
+            >UMA VISUALIZAÇÃO CONCEITUAL DO TEMPO DE VIAGEM DA LUZ</span
+          >
+        </div>
+        <div id="narrative" class="narrative">
+          <div class="transmission-label">
+            <span class="voice-symbol" aria-hidden="true"
+              ><i></i><i></i><i></i><i></i><i></i></span
+            ><span class="mono"
+              >TRANSMISSÃO DE BORDO <span id="transmission-count"></span></span
+            ><span class="voice-status mono">SINAL ESTÁVEL</span>
+          </div>
+          <p id="narration" aria-live="polite"></p>
+          <div class="transmission-bottom">
+            <span class="mono" id="voice-signature"
+              >IDENTIDADE NÃO CONFIRMADA</span
+            ><button id="story-back" aria-label="Voltar à transmissão anterior">
+              ←
+            </button>
+            <div id="story-dots" aria-label="Transmissões deste capítulo"></div>
+          </div>
+        </div>
+        <div id="final-reflection" class="final-reflection" hidden>
+          <label for="takeaway">Que palavra você leva dessa viagem?</label>
+          <div>
+            <input
+              id="takeaway"
+              maxlength="60"
+              placeholder="Curiosidade, coragem, pertencimento…"
+              autocomplete="off"
+            /><button id="save-letter" class="outline-button">
+              Guardar minha viagem
+              <svg class="icon"><use href="#i-book" /></svg>
+            </button>
+          </div>
+          <p>
+            Sua resposta fica só neste navegador até você sair. Você pode baixar
+            uma carta para levar consigo.
+          </p>
+        </div>
+        <div class="journey-bottom">
+          <div class="chapter-tracker">
+            <span id="current-number" class="mono"></span>
+            <div
+              id="progress"
+              class="progress"
+              aria-label="Progresso da jornada"
+            ></div>
+            <span class="mono">06</span>
+          </div>
+          <p id="scene-hint" class="mono"></p>
+          <button id="next" class="primary"></button>
+        </div>
+        <span
+          id="easter-egg"
+          class="mono"
+          hidden
+          title="Para quem continua olhando."
+          >L.E. / ∞</span
+        >
+      </section>
+    </main>
+    <footer id="footer">
+      <a class="footer-brand" href="#inicio"
+        >T.A.R.S. <span>— A JORNADA</span></a
+      >
+      <p class="mono">UMA OBRA SOBRE O COSMOS. E QUEM O OBSERVA.</p>
+      <button id="credits-open" class="text-button">
+        Fontes & créditos <svg class="icon"><use href="#i-diagonal" /></svg>
+      </button>
+    </footer>
+    <dialog
+      id="prologue-dialog"
+      class="prologue-dialog"
+      aria-labelledby="prologue-title"
+    >
+      <button
+        class="close"
+        data-close="prologue-dialog"
+        aria-label="Fechar abertura"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <div class="prologue-orbit" aria-hidden="true"></div>
+      <p class="eyebrow" id="prologue-label">TRANSMISSÃO INICIAL / 01</p>
+      <h2 id="prologue-title" tabindex="-1">Você desperta.</h2>
+      <p id="prologue-text">
+        Não há chão. Não há paredes.<br />Apenas a sua respiração e um mundo
+        suspenso no escuro.
+      </p>
+      <div class="prologue-actions">
+        <button id="prologue-next" class="primary">
+          Continuar <svg class="icon"><use href="#i-arrow" /></svg></button
+        ><button id="prologue-skip" class="text-button">
+          Ir direto à jornada
+        </button>
+      </div>
+      <p class="mono prologue-footnote">
+        NÃO É PRECISO IR DEPRESSA PARA IR LONGE.
+      </p>
+    </dialog>
+    <dialog id="map-dialog" class="map-dialog" aria-labelledby="map-title">
+      <button class="close" data-close="map-dialog" aria-label="Fechar mapa">
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">CARTA DE NAVEGAÇÃO / T.A.R.S.</p>
+      <h2 id="map-title">O caminho até <em>o infinito.</em></h2>
+      <p class="dialog-intro">
+        Um horizonte de cada vez. Os destinos conhecidos continuam sendo seus.
+      </p>
+      <div class="map-summary mono">
+        <span id="map-position"></span><span id="map-progress"></span>
+      </div>
+      <div id="map-nodes" class="map-nodes"></div>
+      <div class="map-bottom">
+        <p class="map-legend mono">
+          <span>●</span> Conhecido <span>◉</span> Você está aqui
+          <span>○</span> Não alcançado
+        </p>
+        <button id="map-continue" class="primary">
+          Continuar jornada <svg class="icon"><use href="#i-arrow" /></svg>
+        </button>
+      </div>
+    </dialog>
+    <dialog
+      id="discovery-dialog"
+      class="discovery-dialog"
+      aria-labelledby="discovery-title"
+    >
+      <button
+        class="close"
+        data-close="discovery-dialog"
+        aria-label="Fechar descoberta"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <div class="discovery-visual">
+        <div id="discovery-art" class="discovery-art" aria-hidden="true"></div>
+        <div class="discovery-coordinate mono" id="discovery-coordinate"></div>
+        <label class="zoom-control mono"
+          >APROXIMAR<input
+            type="range"
+            id="discovery-zoom"
+            min="100"
+            max="180"
+            value="100"
+            aria-label="Ampliação visual do objeto"
+          /><span id="zoom-value">1,0×</span></label
+        ><span class="art-label mono">ILUSTRAÇÃO CONCEITUAL · SEM ESCALA</span>
+      </div>
+      <div class="discovery-copy">
+        <p class="eyebrow" id="discovery-category">ARQUIVO DE DESCOBERTAS</p>
+        <h2 id="discovery-title"></h2>
+        <p id="discovery-subtitle" class="poetic"></p>
+        <div
+          class="discovery-tabs"
+          role="tablist"
+          aria-label="Conteúdo da descoberta"
+        >
+          <button
+            id="fact-tab"
+            role="tab"
+            aria-selected="true"
+            aria-controls="fact-panel"
+            tabindex="0"
+          >
+            O que sabemos</button
+          ><button
+            id="reflection-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="reflection-panel"
+            tabindex="-1"
+          >
+            O que sentimos
+          </button>
+        </div>
+        <div id="fact-panel" role="tabpanel" aria-labelledby="fact-tab">
+          <p id="discovery-description"></p>
+          <dl id="discovery-facts" class="facts"></dl>
+          <div id="discovery-extra" class="detail-note"></div>
+          <a
+            id="discovery-source"
+            class="source-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Aprofundar na NASA
+            <svg class="icon"><use href="#i-diagonal" /></svg
+          ></a>
+        </div>
+        <div
+          id="reflection-panel"
+          role="tabpanel"
+          aria-labelledby="reflection-tab"
+          hidden
+        >
+          <p class="eyebrow">UMA LEITURA POÉTICA</p>
+          <blockquote id="discovery-reflection"></blockquote>
+          <p id="reflection-question" class="reflection-question"></p>
+        </div>
+        <div class="discovery-actions">
+          <button id="bookmark" class="outline-button" aria-pressed="false">
+            Guardar no caderno +</button
+          ><button class="text-button" data-close="discovery-dialog">
+            Continuar exploração <svg class="icon"><use href="#i-arrow" /></svg>
+          </button>
+        </div>
+      </div>
+    </dialog>
+    <dialog
+      id="journal-dialog"
+      class="journal-dialog"
+      aria-labelledby="journal-title"
+    >
+      <button
+        class="close"
+        data-close="journal-dialog"
+        aria-label="Fechar caderno"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">ARQUIVO PESSOAL / DURANTE ESTA VISITA</p>
+      <h2 id="journal-title">Caderno <em>de bordo.</em></h2>
+      <p class="dialog-intro">
+        Há mundos que você visita. E mundos que ficam com você.
+      </p>
+      <div id="journal-items"></div>
+      <button class="outline-button" id="download-journal">
+        Baixar meus registros <svg class="icon"><use href="#i-book" /></svg>
+      </button>
+      <p class="storage-note mono">
+        REGISTROS LOCAIS · SEM CONTA · SEM ENVIO DE DADOS
+      </p>
+    </dialog>
+    <dialog
+      id="scale-dialog"
+      class="scale-dialog"
+      aria-labelledby="scale-title"
+    >
+      <button
+        class="close"
+        data-close="scale-dialog"
+        aria-label="Fechar escala"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">PARA SENTIR A DISTÂNCIA</p>
+      <h2 id="scale-title">Quando o perto<br /><em>fica longe.</em></h2>
+      <div class="scale-visual" aria-hidden="true">
+        <span class="scale-origin"></span>
+        <div id="scale-circle"></div>
+        <span class="scale-edge"></span>
+      </div>
+      <label for="scale-range" class="mono">EXPLORE AS ORDENS DE GRANDEZA</label
+      ><input
+        id="scale-range"
+        type="range"
+        min="0"
+        max="5"
+        value="0"
+        step="1"
+      />
+      <div id="scale-readout" aria-live="polite"></div>
+      <p class="storage-note">
+        Escalas aproximadas. O círculo é uma metáfora visual; as distâncias não
+        estão representadas proporcionalmente.
+      </p>
+    </dialog>
+    <dialog
+      id="settings-dialog"
+      class="small-dialog"
+      aria-labelledby="settings-title"
+    >
+      <button
+        class="close"
+        data-close="settings-dialog"
+        aria-label="Fechar preferências"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">SEU RITMO, SEU SILÊNCIO</p>
+      <h2 id="settings-title">Ajuste a atmosfera.</h2>
+      <label class="setting-label" for="volume"
+        >Volume da trilha ambiente <span id="volume-value">30%</span></label
+      ><input type="range" id="volume" min="0" max="100" value="30" />
+      <p>
+        O som começa apenas quando você escolhe. Toda a história também existe
+        no silêncio.
+      </p>
+      <label class="switch-label"
+        ><input id="motion-toggle" type="checkbox" /> Reduzir movimento</label
+      ><button id="fullscreen" class="outline-button">
+        Alternar tela cheia <svg class="icon"><use href="#i-expand" /></svg>
+      </button>
+    </dialog>
+    <dialog
+      id="about-dialog"
+      class="small-dialog"
+      aria-labelledby="about-title"
+    >
+      <button
+        class="close"
+        data-close="about-dialog"
+        aria-label="Fechar apresentação"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">UMA EXPERIÊNCIA AUTORAL</p>
+      <h2 id="about-title">Um refúgio<br /><em>para a curiosidade.</em></h2>
+      <p>
+        T.A.R.S. é uma viagem imaginativa de aproximadamente cinco minutos — ou
+        do tempo que você quiser ficar. A astronomia sustenta as descobertas; a
+        poesia abre espaço para as perguntas.
+      </p>
+      <p>
+        Avance pelas transmissões, explore os pontos luminosos e guarde o que
+        quiser no caderno. O mapa permite retornar aos horizontes já conhecidos.
+      </p>
+      <p>
+        Não há coleta de dados, IA conversacional ou viagem física simulada. Há
+        você, o universo e algumas boas perguntas.
+      </p>
+      <button class="primary" data-close="about-dialog">
+        Entendi. Vamos explorar.
+      </button>
+    </dialog>
+    <dialog
+      id="credits-dialog"
+      class="small-dialog"
+      aria-labelledby="credits-title"
+    >
+      <button
+        class="close"
+        data-close="credits-dialog"
+        aria-label="Fechar créditos"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">CIÊNCIA, ARTE & CUIDADO</p>
+      <h2 id="credits-title">De onde vem<br /><em>a nossa luz.</em></h2>
+      <p>
+        Textos narrativos e som sintetizado originais. Os visuais cósmicos são
+        ilustrações geradas com IA para esta obra, não fotografias nem
+        simulações científicas.
+      </p>
+      <p>
+        As descobertas usam fatos astronômicos de alta confiança e fornecem
+        links de aprofundamento na NASA. Valores são aproximados. O universo
+        observável não é uma borda demonstrada de todo o universo.
+      </p>
+      <p>
+        Fontes tipográficas locais: Cormorant Garamond e IBM Plex Mono, sob SIL
+        Open Font License. Licenças incluídas no projeto.
+      </p>
+      <a
+        href="https://science.nasa.gov/universe/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="source-link"
+        >Explorar as fontes científicas ↗</a
+      >
+    </dialog>
+    <div id="transition" class="transition" aria-hidden="true">
+      <div class="transition-line"></div>
+      <span id="transition-label" class="mono"></span>
+    </div>
+    <p id="toast" class="toast" role="status" hidden></p>
+    <p id="status" class="sr-only" role="status"></p>
+    <noscript
+      ><p class="no-script">
+        Ative o JavaScript para percorrer esta experiência interativa. A
+        abertura permanece disponível sem ele.
+      </p></noscript
+    >
+  </body>
 </html>
