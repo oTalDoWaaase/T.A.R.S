@@ -9,6 +9,7 @@
       content="Desperte à deriva. Atravesse seis horizontes. Uma experiência narrativa da Terra aos limites do universo observável — e para dentro de você."
     />
     <title>T.A.R.S. — A Jornada</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
     <link
       rel="preload"
       href="assets/fonts/cormorant.woff"
@@ -18,7 +19,10 @@
     />
     <link rel="preload" href="assets/images/arrival.webp" as="image" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/experience.css" />
     <script src="js/data.js" defer></script>
+    <script src="js/profiles.js" defer></script>
+    <script src="js/explorer.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body data-view="home">
@@ -194,6 +198,9 @@
         <div class="chapter-top">
           <p id="chapter-label" class="eyebrow"></p>
           <div class="scene-tools">
+            <button id="atlas-open" class="tool-button" hidden>
+              Atlas solar
+            </button>
             <button id="scale-open" class="tool-button">
               Nossa escala
               <svg class="icon"><use href="#i-diagonal" /></svg></button
@@ -240,6 +247,42 @@
             ><span class="voice-status mono">SINAL ESTÁVEL</span>
           </div>
           <p id="narration" aria-live="polite"></p>
+          <fieldset id="question-panel" class="question-panel" hidden>
+            <legend id="question-title"></legend>
+            <p id="question-number" class="mono"></p>
+            <div id="question-options" class="question-options"></div>
+            <div class="question-foot">
+              <p id="question-feedback" role="status">
+                Uma escolha sua deixa um sinal nesta viagem.
+              </p>
+              <button id="skip-question" class="quiz-skip">
+                Prefiro só observar
+              </button>
+            </div>
+          </fieldset>
+          <section
+            id="profile-result"
+            class="profile-result"
+            hidden
+            aria-labelledby="profile-title"
+          >
+            <p class="eyebrow">
+              O QUE SUA VIAGEM REVELOU <span id="profile-count"></span>
+            </p>
+            <p id="profile-name" class="profile-name"></p>
+            <h3 id="profile-title"></h3>
+            <p id="profile-text"></p>
+            <p id="profile-secondary"></p>
+            <blockquote id="profile-evidence"></blockquote>
+            <p id="profile-invitation" class="profile-invitation"></p>
+            <p class="profile-note">
+              Um retrato desta viagem, não uma definição de você.
+            </p>
+            <button id="review-answers" class="text-button">
+              Revisitar minhas escolhas
+              <svg class="icon"><use href="#i-book" /></svg>
+            </button>
+          </section>
           <div class="transmission-bottom">
             <span class="mono" id="voice-signature"
               >IDENTIDADE NÃO CONFIRMADA</span
@@ -247,6 +290,9 @@
               ←
             </button>
             <div id="story-dots" aria-label="Transmissões deste capítulo"></div>
+          </div>
+          <div class="transmission-action">
+            <button id="next" class="transmission-next"></button>
           </div>
         </div>
         <div id="final-reflection" class="final-reflection" hidden>
@@ -278,7 +324,6 @@
             <span class="mono">06</span>
           </div>
           <p id="scene-hint" class="mono"></p>
-          <button id="next" class="primary"></button>
         </div>
         <span
           id="easter-egg"
@@ -298,6 +343,30 @@
         Fontes & créditos <svg class="icon"><use href="#i-diagonal" /></svg>
       </button>
     </footer>
+    <dialog
+      id="solar-atlas-dialog"
+      class="atlas-dialog"
+      aria-labelledby="atlas-title"
+    >
+      <button
+        class="close"
+        data-close="solar-atlas-dialog"
+        aria-label="Fechar atlas"
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">NOSSA VIZINHANÇA / OITO PLANETAS</p>
+      <h2 id="atlas-title">Mundos em torno<br /><em>da mesma luz.</em></h2>
+      <p class="dialog-intro">
+        Escolha um planeta. Arraste seu globo para mudar a perspectiva, aproxime
+        e descubra seus detalhes.
+      </p>
+      <div id="atlas-worlds" class="atlas-worlds"></div>
+      <p class="storage-note">
+        Mapas históricos e representações educativas. Os tamanhos e as
+        velocidades não estão em escala física.
+      </p>
+    </dialog>
     <dialog
       id="prologue-dialog"
       class="prologue-dialog"
@@ -364,7 +433,27 @@
         <svg class="icon"><use href="#i-close" /></svg>
       </button>
       <div class="discovery-visual">
-        <div id="discovery-art" class="discovery-art" aria-hidden="true"></div>
+        <div id="discovery-art" class="discovery-art"></div>
+        <div
+          id="viewer-tools"
+          class="viewer-tools"
+          aria-label="Controles da visualização"
+        >
+          <button id="viewer-left" aria-label="Girar objeto para a esquerda">
+            ↶</button
+          ><button id="viewer-right" aria-label="Girar objeto para a direita">
+            ↷
+          </button>
+          <button id="viewer-spin" aria-pressed="false">Iniciar rotação</button
+          ><button id="viewer-detail" aria-pressed="false">Iluminação</button
+          ><button id="viewer-reset">Restaurar vista</button>
+        </div>
+        <p id="viewer-orientation" class="viewer-orientation mono"></p>
+        <p id="viewer-help" class="viewer-help">
+          Arraste para girar. Use dois dedos, a roda ou o controle para
+          aproximar. No teclado: setas giram, +/− aproximam, Home restaura e
+          Espaço alterna a rotação.
+        </p>
         <div class="discovery-coordinate mono" id="discovery-coordinate"></div>
         <label class="zoom-control mono"
           >APROXIMAR<input
@@ -375,7 +464,7 @@
             value="100"
             aria-label="Ampliação visual do objeto"
           /><span id="zoom-value">1,0×</span></label
-        ><span class="art-label mono">ILUSTRAÇÃO CONCEITUAL · SEM ESCALA</span>
+        ><span id="viewer-note" class="art-label mono"></span>
       </div>
       <div class="discovery-copy">
         <p class="eyebrow" id="discovery-category">ARQUIVO DE DESCOBERTAS</p>
@@ -454,6 +543,7 @@
         Há mundos que você visita. E mundos que ficam com você.
       </p>
       <div id="journal-items"></div>
+      <section id="journal-answers" class="journal-answers"></section>
       <button class="outline-button" id="download-journal">
         Baixar meus registros <svg class="icon"><use href="#i-book" /></svg>
       </button>
@@ -568,9 +658,12 @@
       <p class="eyebrow">CIÊNCIA, ARTE & CUIDADO</p>
       <h2 id="credits-title">De onde vem<br /><em>a nossa luz.</em></h2>
       <p>
-        Textos narrativos e som sintetizado originais. Os visuais cósmicos são
+        Textos narrativos e trilha musical originais. Os cenários cósmicos são
         ilustrações geradas com IA para esta obra, não fotografias nem
-        simulações científicas.
+        simulações científicas. Os globos usam mapas locais com suas respectivas
+        licenças e superfícies procedurais identificadas. A trilha Entre
+        horizontes e seu gerador estão em CC0; não contêm samples ou temas de
+        filmes.
       </p>
       <p>
         As descobertas usam fatos astronômicos de alta confiança e fornecem

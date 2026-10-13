@@ -204,6 +204,11 @@ const assert = (condition, message) => {
     "reset records",
   );
   await page.locator("#sound-toggle").click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector("#sound-toggle").getAttribute("aria-pressed") ===
+      "true",
+  );
   assert(
     (await page.locator("#sound-toggle").getAttribute("aria-pressed")) ===
       "true",

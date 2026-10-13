@@ -1,10 +1,7 @@
 "use strict";
-const sources = {
-  solar: "https://science.nasa.gov/solar-system/",
-  stars: "https://science.nasa.gov/universe/stars/",
-  galaxies: "https://science.nasa.gov/universe/galaxies/",
-  universe: "https://science.nasa.gov/universe/overview/",
-};
+// Conteúdo local: fatos científicos, narrativa e representações visuais têm funções distintas.
+// Edite as definições abaixo; não há sobrescritas posteriores dos textos.
+
 const objects = {
   terra: {
     name: "Terra",
@@ -18,7 +15,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: vista de longe, nenhuma fronteira está desenhada.",
-    source: sources.solar,
+    source: "https://science.nasa.gov/solar-system/",
   },
   lua: {
     name: "Lua",
@@ -98,7 +95,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: perto é uma palavra que muda quando olhamos para cima.",
-    source: sources.stars,
+    source: "https://science.nasa.gov/universe/stars/",
   },
   sirio: {
     name: "Sirius",
@@ -112,7 +109,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: até os pontos de luz podem guardar histórias invisíveis.",
-    source: sources.stars,
+    source: "https://science.nasa.gov/universe/stars/",
   },
   vialactea: {
     name: "Via Láctea",
@@ -126,7 +123,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: não estamos no centro. Ainda assim, estamos aqui.",
-    source: sources.galaxies,
+    source: "https://science.nasa.gov/universe/galaxies/",
   },
   sagitario: {
     name: "Sagittarius A*",
@@ -154,7 +151,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: algumas cartas levam milhões de anos para chegar.",
-    source: sources.galaxies,
+    source: "https://science.nasa.gov/universe/galaxies/",
   },
   teia: {
     name: "Teia cósmica",
@@ -168,7 +165,7 @@ const objects = {
     ],
     reflection:
       "Metáfora de bordo: mesmo a vastidão tem seus fios de encontro.",
-    source: sources.galaxies,
+    source: "https://science.nasa.gov/universe/galaxies/",
   },
   observavel: {
     name: "Universo observável",
@@ -182,11 +179,66 @@ const objects = {
     ],
     reflection:
       "A expansão do espaço explica por que o raio atual supera 13,8 bilhões de anos-luz. A jornada é imaginativa, não uma viagem fisicamente realizável.",
-    source: sources.universe,
+    source: "https://science.nasa.gov/universe/overview/",
+  },
+  mercurio: {
+    name: "Mercúrio",
+    art: "mercury",
+    subtitle: "Um mundo de extremos junto ao Sol.",
+    description:
+      "O menor planeta do Sistema Solar tem uma superfície marcada por crateras e uma exosfera muito tênue. Seus dias e noites atingem temperaturas muito diferentes.",
+    facts: [
+      ["Ano mercuriano", "Cerca de 88 dias terrestres"],
+      ["Luas", "Nenhuma"],
+    ],
+    reflection:
+      "Metáfora de bordo: até perto da luz há espaço para o silêncio.",
+    source: "https://science.nasa.gov/mercury/",
+  },
+  venus: {
+    name: "Vênus",
+    art: "venus",
+    subtitle: "Um mundo escondido por nuvens.",
+    description:
+      "Uma atmosfera densa de dióxido de carbono e nuvens de ácido sulfúrico envolvem Vênus. O intenso efeito estufa faz dele o planeta mais quente do Sistema Solar.",
+    facts: [
+      ["Temperatura da superfície", "Cerca de 465 °C"],
+      ["Rotação", "Retrógrada e muito lenta"],
+    ],
+    reflection:
+      "Metáfora de bordo: uma superfície nem sempre mostra o que existe por baixo.",
+    source: "https://science.nasa.gov/venus/",
+  },
+  urano: {
+    name: "Urano",
+    art: "uranus",
+    subtitle: "Um gigante que mudou de perspectiva.",
+    description:
+      "Urano é um gigante de gelo com atmosfera rica em hidrogênio, hélio e metano. Seu eixo é muito inclinado: o planeta parece girar deitado em relação ao plano de sua órbita.",
+    facts: [
+      ["Inclinação do eixo", "Cerca de 98°"],
+      ["Ano uraniano", "Cerca de 84 anos terrestres"],
+    ],
+    reflection:
+      "Metáfora de bordo: há outras maneiras de atravessar o mesmo céu.",
+    source: "https://science.nasa.gov/uranus/",
+  },
+  netuno: {
+    name: "Netuno",
+    art: "neptune",
+    subtitle: "Um horizonte azul e ventoso.",
+    description:
+      "O planeta mais distante do Sol abriga ventos muito rápidos. Sua atmosfera contém metano, e sua aparência real é mais suavemente azul do que muitas imagens históricas em cores realçadas.",
+    facts: [
+      ["Ano netuniano", "Cerca de 165 anos terrestres"],
+      ["Tipo de planeta", "Gigante de gelo"],
+    ],
+    reflection:
+      "Metáfora de bordo: mesmo a distância mais fria pode guardar movimento.",
+    source: "https://science.nasa.gov/neptune/",
   },
 };
 
-// Todas as imagens são ilustrativas. Fatos e metáforas têm espaços separados na interface.
 const objectDetails = {
   terra: {
     chapter: 0,
@@ -298,7 +350,40 @@ const objectDetails = {
       "Não sabemos se o universo inteiro é finito ou infinito. O limite da nossa observação não determina o limite de tudo o que existe.",
     question: "O desconhecido diminui você — ou abre espaço para continuar?",
   },
+  mercurio: {
+    chapter: 1,
+    art: "mercury",
+    coordinate: "SOL I / MUNDO ROCHOSO",
+    extra:
+      "O dia solar em Mercúrio dura cerca de 176 dias terrestres — mais do que seu ano. A superfície deste visualizador é procedural, sem pretender mapear crateras reais.",
+    question: "O que muda quando um dia é maior que um ano?",
+  },
+  venus: {
+    chapter: 1,
+    art: "venus",
+    coordinate: "SOL II / ATMOSFERA DENSA",
+    extra:
+      "Na visualização, você pode alternar nuvens ilustrativas e um mapa de superfície obtido por radar. As cores do mapa são representativas, não uma fotografia através das nuvens.",
+    question: "O que você gostaria de enxergar além da primeira camada?",
+  },
+  urano: {
+    chapter: 1,
+    art: "uranus",
+    coordinate: "SOL VII / GIGANTE DE GELO",
+    extra:
+      "Sua cor suave é representada proceduralmente. O modelo é uma visualização educativa, não um mapa de fenômenos atmosféricos em tempo real.",
+    question: "Que outra perspectiva faria seu mundo parecer novo?",
+  },
+  netuno: {
+    chapter: 1,
+    art: "neptune",
+    coordinate: "SOL VIII / GIGANTE DE GELO",
+    extra:
+      "O mapa histórico da NASA usa cores processadas. A iluminação aqui é artística; o visualizador não mede a cor aparente do planeta com precisão fotométrica.",
+    question: "O que continua em movimento mesmo quando parece distante?",
+  },
 };
+
 const chapters = [
   {
     title: "O Despertar",
@@ -317,7 +402,7 @@ const chapters = [
     stories: [
       "Você desperta à deriva. Não há cima nem baixo, mas existe um mundo azul. Em algum lugar lá embaixo estão as ruas que você conhece, alguém que sente sua falta e todas as perguntas que você ainda não fez.",
       "Daqui, nada parece separado. O oceano não conhece países. As nuvens não pedem licença. É estranho como precisamos nos afastar para perceber o que sempre esteve junto. Guarde essa imagem. Vamos precisar dela depois.",
-      "Você talvez esteja se perguntando quem fala. Por enquanto, pense em mim como uma companhia para o silêncio. Não tenho todas as respostas. Mas conheço muito bem essa vontade sua de continuar olhando.",
+      "Há uma transmissão, mas nenhum emissor aparece no mapa. A voz chega no intervalo entre duas perguntas suas. Coincidência? Por enquanto, pode me chamar de companhia. Não procure uma nave seguindo você. Procure o que fez você olhar para cima.",
     ],
   },
   {
@@ -338,7 +423,7 @@ const chapters = [
     hint: "QUATRO DESTINOS · ESCOLHA UM MUNDO",
     stories: [
       "Ainda estamos perto de casa. Pelo menos é isso que o mapa insiste em dizer. Ao redor do Sol, um deserto guarda a memória de rios. Uma tempestade dura séculos. Uma lua esconde um oceano debaixo do gelo.",
-      "Marte, Júpiter, Saturno, Encélado. Nomes pequenos para mundos que não cabem em nós. Explore o que chamar sua atenção. Aqui não há resposta certa — e, felizmente, ninguém trouxe uma prova de astronomia.",
+      "Um oceano escondido. Uma tempestade que atravessa séculos. Um planeta coberto por nuvens que não nos deixam ver sua superfície. O universo não distribui seus segredos por ordem de importância. Às vezes, começa pelo mundo que você escolheu sem saber explicar por quê.",
       "O que faz você escolher um mundo e não outro? A cor? O mistério? A promessa de algo escondido? Talvez essa escolha diga um pouco sobre quem observa. Anote o que quiser. A partir daqui, nosso Sol começa a ficar pequeno.",
     ],
   },
@@ -359,7 +444,7 @@ const chapters = [
     stories: [
       "A estrela mais próxima do Sol está a pouco mais de quatro anos-luz. Sua luz atravessa quatro anos de escuridão antes de tocar nossos olhos. Perto, ao que parece, é uma palavra que o universo ainda não aprendeu.",
       "Olhamos para Sirius e encontramos duas estrelas onde parecia haver uma. Às vezes, a primeira impressão só mostra a parte mais brilhante da história. O que será que existe, silenciosamente, ao lado das suas certezas?",
-      "Uma estrela não sabe que está sendo vista. Ainda assim, sua luz encontra alguém capaz de se perguntar de onde ela veio. Esse encontro improvável entre matéria e curiosidade… talvez seja a coisa mais extraordinária desta viagem.",
+      "Uma estrela não sabe que está sendo vista. Sua luz, porém, encontra alguém capaz de perguntar de onde ela veio. E esta voz? Ela parece conhecer o instante em que você decide continuar. Talvez a origem do sinal esteja mais perto do que a direção em que você procura.",
     ],
   },
   {
@@ -378,7 +463,7 @@ const chapters = [
     stories: [
       "Imagine uma cidade com bilhões de luzes. Agora imagine que cada luz é uma estrela, talvez cercada de mundos. Essa é nossa galáxia. Não podemos fotografá-la inteira por fora: estamos dentro dela, tentando compreender a própria casa.",
       "O Sistema Solar percorre uma região do braço de Órion, longe do centro. Uma volta galáctica leva cerca de 230 milhões de anos. Sua vida é breve diante desse relógio. Mas é nela que esse relógio ganha significado.",
-      "Há quem encontre pequenez nessa comparação. Eu encontro outra coisa: um fragmento do universo capaz de perceber a galáxia inteira. Você não ocupa muito espaço. Sua capacidade de perguntar, porém, já atravessou tudo isto.",
+      "Você ocupa pouco espaço nesta galáxia. Ainda assim, conseguiu imaginá-la inteira. Há um detalhe estranho nas nossas transmissões: elas não seguem a posição das estrelas. Seguem suas perguntas. O mapa mede distâncias; alguma outra coisa está escolhendo o caminho.",
     ],
   },
   {
@@ -398,7 +483,7 @@ const chapters = [
     stories: [
       "Nossa galáxia já não é o mundo inteiro. É uma ilha num arquipélago sem medida familiar. A luz de Andrômeda chega agora, mas partiu há cerca de 2,5 milhões de anos. Você está recebendo uma carta escrita antes de existirmos como espécie.",
       "Deslize a lente do tempo. A luz não se apressa porque temos pressa. Entre os filamentos da teia cósmica há vazios imensos. Mesmo assim, algo chega até aqui: um sinal, uma história, a possibilidade de compreender.",
-      "Você percebeu? A cada horizonte, as perguntas mudam. Já não é apenas “o que há lá fora?”. É “por que eu quero tanto saber?”. Essa segunda pergunta não veio de uma galáxia distante. Ela sempre esteve viajando com você.",
+      "Quanto mais longe você olha, mais antigas são as luzes. Mas as perguntas se tornam cada vez mais suas. A voz não recebeu nenhuma mensagem de Andrômeda. Ela mudou quando você escolheu observar, compreender, seguir ou compartilhar. Talvez seja hora de perguntar quem está escutando quem.",
     ],
   },
   {
@@ -419,6 +504,7 @@ const chapters = [
     ],
   },
 ];
+
 const prologue = [
   {
     title: "Você desperta.",
@@ -433,6 +519,7 @@ const prologue = [
     text: "Seis horizontes. Nenhum cronômetro.\nExplore os mundos. Escute as perguntas.\nE, quando estiver pronto, continue.",
   },
 ];
+
 const scales = [
   {
     name: "Terra → Lua",
@@ -474,4 +561,15 @@ const scales = [
       "O espaço se expandiu enquanto a luz viajava. A idade do universo é de cerca de 13,8 bilhões de anos.",
     caption: "Um limite de observação, não uma borda comprovada de tudo.",
   },
+];
+
+const solarAtlas = [
+  "mercurio",
+  "venus",
+  "terra",
+  "marte",
+  "jupiter",
+  "saturno",
+  "urano",
+  "netuno",
 ];

@@ -2,9 +2,9 @@
 
 ## Arte e narrativa
 
-`arrival.webp`, `solar.webp`, `stellar.webp`, `galaxy.webp`, `beyond.webp`, `horizon.webp` e `planets.webp`: ilustrações geradas com IA para este projeto, orientadas por uma direção de arte original. Otimizadas localmente em WebP. Não são fotografias, mapas exatos ou evidências científicas. A Lua é uma composição procedural CSS.
+`arrival.webp`, `solar.webp`, `stellar.webp`, `galaxy.webp`, `beyond.webp`, `horizon.webp` e `planets.webp`: ilustrações geradas com IA para este projeto, orientadas por uma direção de arte original. Otimizadas localmente em WebP. Não são fotografias, mapas exatos ou evidências científicas. Os globos têm mapas locais, geometria e iluminação educativa; veja `textures/SOURCES.md` para as origens e licenças.
 
-Narrativa, microcopy, reflexões e ambientação sintetizada: originais deste protótipo. Não há citações atribuídas a Carl Sagan ou falas de filmes.
+Narrativa, microcopy e reflexões: originais deste protótipo. A trilha **Entre horizontes** é uma composição sintetizada original em CC0 1.0 Universal; detalhes em `audio/README.md` e `audio/CC0.md`. Não há citações atribuídas a Carl Sagan ou falas de filmes.
 
 ## Tipografia
 
@@ -19,6 +19,10 @@ Valores aproximados e conteúdo introdutório; os painéis disponibilizam links 
 
 - [Sistema Solar](https://science.nasa.gov/solar-system/)
 - [Lua](https://science.nasa.gov/moon/)
+- [Mercúrio](https://science.nasa.gov/mercury/)
+- [Vênus](https://science.nasa.gov/venus/)
+- [Urano](https://science.nasa.gov/uranus/)
+- [Netuno](https://science.nasa.gov/neptune/)
 - [Marte](https://science.nasa.gov/mars/)
 - [Júpiter](https://science.nasa.gov/jupiter/)
 - [Saturno](https://science.nasa.gov/saturn/)
@@ -29,3 +33,7 @@ Valores aproximados e conteúdo introdutório; os painéis disponibilizam links 
 - [Visão geral do universo](https://science.nasa.gov/universe/overview/)
 
 A leitura poética é separada dos fatos. A jornada não afirma a existência de uma entidade sobrenatural, vida extraterrestre confirmada ou um limite físico conhecido de todo o universo.
+
+## Retratos de exploração
+
+As dez perguntas alimentam quatro retratos narrativos (explorador, investigador, contemplativo e conector), com saídas para preferências mistas ou poucas respostas. A pontuação descreve escolhas nesta experiência; não é instrumento psicológico validado ou diagnóstico de personalidade. Os pesos estão em `js/profiles.js`, com duas unidades para a afinidade principal e uma para a secundária. Nenhuma resposta sai do navegador.

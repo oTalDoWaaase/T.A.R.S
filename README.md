@@ -1,95 +1,132 @@
 # T.A.R.S. — A Jornada
 
-Uma obra digital contemplativa: você desperta à deriva e atravessa seis horizontes, da Terra aos limites do universo observável. Ao longo da história, uma voz conduz a exploração — e deixa pistas sobre sua origem.
+Uma experiência narrativa e contemplativa da Terra aos limites do universo observável. Seis horizontes, uma voz de origem desconhecida e escolhas que deixam um retrato da sua própria maneira de explorar.
 
-![Tela de abertura da jornada, com a Terra e um viajante à deriva](docs/abertura.jpg)
-
-Esta versão reconstrói a primeira entrega: seis cenários próprios, direção de arte cinematográfica, abertura em três atos, dezoito transmissões e descobertas que alternam ciência e reflexão. O briefing de referência está em `BRIEFING_TARS_V1.md`.
+![Abertura da jornada](docs/abertura.jpg)
 
 ## Rodar agora
 
-Extraia o projeto e abra **`index.html`** no navegador. Não há instalação, build ou conexão obrigatória. Mantenha as pastas junto ao HTML.
+Extraia a pasta e abra **`index.html`** no navegador. Os arquivos precisam permanecer juntos. Não é necessário instalar pacotes, conectar à internet ou executar um build.
 
-Se preferir um servidor local, com Node.js instalado:
+Com Node.js, também é possível usar o servidor estático opcional:
 
 ```sh
 node tools/serve.mjs
 ```
 
-Abra a porta 8080 no seu navegador local. Para outra porta, configure `PORT` antes de executar. O servidor é somente uma ferramenta opcional de desenvolvimento; a aplicação continua inteiramente estática, sem backend.
+Abra a porta 8080 no navegador local. Para outra porta, configure `PORT` antes de executar. O servidor é uma ferramenta de desenvolvimento; a aplicação não tem backend.
 
-![Capítulo Nossa Vizinhança, com Saturno e objetos exploráveis](docs/vizinhanca.jpg)
+## O que mudou nesta versão
 
-## A experiência
+- O avanço de transmissão e de capítulo agora fica **dentro do painel da voz**, com uma faixa em lavanda e azul profundo. Os controles superiores seguem a mesma linguagem visual.
+- **Dez perguntas opcionais**, espalhadas pelos seis capítulos, registram escolhas e produzem um encerramento pessoal. É possível pular, revisitar e editar respostas.
+- **Retratos de exploração:** explorador de horizontes, cartógrafo do invisível, observador do silêncio ou tecelão de encontros. Preferências próximas geram um retrato misto; poucas respostas deixam o horizonte em aberto.
+- **Globos interativos:** arraste para girar, use dois dedos/roda/slider para aproximar, pause a rotação e restaure a vista. Terra, Lua, Marte, Júpiter, Saturno, Encélado, Vênus e Netuno têm mapas locais; Mercúrio e Urano têm superfícies procedurais identificadas.
+- **Atlas dos oito planetas**, acessível em Nossa Vizinhança. Os quatro objetos da cena continuam disponíveis sem sobrecarregar a composição.
+- **Galáxias e teia em profundidade**, com rotação, zoom, braços/filamentos e estrutura visual manipulável. Estrelas, disco de acreção e horizonte também têm controles.
+- **Trilha musical original:** Entre horizontes, 96 segundos de piano sintetizado, camadas harmônicas e pulsação suave, em **CC0 1.0 Universal**.
+- As transmissões deixam mais pistas sobre a origem do sinal, preservando a revelação final.
 
-- **Abertura:** três cenas escritas, sem cronômetro; você pode ir direto à jornada.
-- **Seis capítulos:** cada horizonte tem um cenário e três transmissões. O botão principal continua a história antes de abrir o próximo capítulo.
-- **Mapa:** destinos futuros ficam bloqueados. Os conhecidos podem ser revisitados.
-- **13 descobertas:** Terra, Lua, Marte, Júpiter, Saturno, Encélado, Proxima Centauri, Sirius, Via Láctea, Sagittarius A\*, Andrômeda, teia cósmica e universo observável.
-- **Painéis:** ampliação visual, dados curtos, curiosidade adicional, fonte científica, leitura poética e pergunta pessoal. Os planetas têm ilustrações detalhadas locais.
-- **Caderno de bordo:** guarde descobertas e exporte seus registros como texto. Não é necessário criar conta.
-- **Escala interativa:** compare seis ordens de grandeza, da Lua ao horizonte observável.
-- **Lente do tempo:** em Além da Via Láctea, explore conceitualmente a viagem da luz de Andrômeda.
-- **Contemplação:** recolha textos e marcadores para observar o cenário.
-- **Final:** a revelação ocorre na terceira transmissão do último capítulo. Uma palavra sua pode acompanhar uma carta baixada localmente. Há um detalhe `L.E.` para quem continuar olhando.
-- **Preferências:** som opcional, volume, movimento reduzido e tela cheia quando disponível.
+![Transmissão com escolhas e avanço integrado](docs/vizinhanca.jpg)
 
-Os capítulos, descobertas e favoritos ficam em **sessionStorage**, apenas nesta aba, para retomar após recarregar. Fechar a aba normalmente encerra a sessão. Reiniciar limpa todos os registros da jornada e a resposta final. Nenhum dado é enviado para serviços externos. Se o navegador bloquear esse armazenamento, a exploração continua em memória. A palavra da carta fica apenas em memória até sair/recarregar.
+## Percorrer a experiência
 
-## Publicação
+A abertura tem três atos e pode ser pulada. Cada capítulo tem três transmissões, avançadas voluntariamente. O mapa permite revisitar somente os destinos alcançados.
 
-### GitHub Pages
+As 13 descobertas da narrativa permanecem, e o atlas acrescenta Mercúrio, Vênus, Urano e Netuno: **17 objetos exploráveis**. Os painéis separam **O que sabemos** e **O que sentimos**, com fatos, curiosidades, fontes e reflexão.
 
-Em **Settings → Pages**, selecione **Deploy from a branch**, branch `main` e pasta `/ (root)`. Os caminhos relativos funcionam também em `/T.A.R.S/`. Não é necessário um build ou configuração de SPA.
+No caderno, você pode guardar descobertas, rever as perguntas já encontradas e exportar os registros. O encerramento inclui seu retrato, exemplos das escolhas que o originaram e uma carta que você pode baixar. A sua palavra final pode acompanhar essa carta.
 
-### Netlify
+Também há escala de distâncias, lente temporal de Andrômeda, modo de contemplação, movimento reduzido, volume e tela cheia quando o navegador oferecer suporte.
 
-Envie a pasta do projeto pelo deploy manual, ou conecte o repositório usando diretório de publicação `.` e nenhum comando de build.
+## Perguntas e retratos
 
-Enviar código ao GitHub não publica automaticamente o site. A ativação de Pages/Netlify é uma etapa separada.
+As dez perguntas estão em `js/profiles.js`: duas em cada um dos primeiros quatro capítulos e uma em cada um dos dois últimos. As respostas são opcionais; avançar sem escolher registra a pergunta como deixada em aberto.
 
-## Estrutura
+Cada alternativa aproxima dois modos de exploração: **2 pontos para a afinidade principal e 1 para a secundária**. O resultado usa as escolhas registradas, sem inferir dados pelo comportamento de navegação. Com menos de três respostas, ele não atribui um retrato individual. Quando os dois modos mais presentes ficam próximos, o texto preserva essa mistura.
+
+Este é um **recurso narrativo de autorreflexão**, não um instrumento psicológico validado nem um diagnóstico de personalidade. O resultado descreve preferências expressas nesta viagem, cita respostas reais e pode mudar quando elas são editadas. Não promete descobrir uma personalidade definitiva com dez perguntas.
+
+Progresso, respostas e caderno ficam em **sessionStorage**, apenas nesta aba. Recarregar permite retomar; fechar a aba normalmente encerra a sessão. Reiniciar limpa a jornada. A palavra da carta permanece em memória até sair/recarregar. Se o navegador bloquear o armazenamento, a exploração continua em memória. Nenhuma resposta é enviada a servidores ou APIs.
+
+## Exploração visual
+
+O renderizador em `js/explorer.js` usa **WebGL nativo**, sem motor externo: projeção de esferas texturizadas, anéis e nuvens de pontos tridimensionais. Há uma alternativa em Canvas2D caso WebGL não esteja disponível.
+
+- **Mouse/toque:** arraste para orbitar; dois dedos ou a roda aproximam.
+- **Teclado:** setas giram; `+`/`−` aproximam; `Home` restaura; `Espaço` alterna a rotação.
+- **Controles visíveis:** girar, iniciar/pausar, iluminação/estrutura e restaurar.
+- **Vênus:** alterna nuvens ilustrativas e mapa de superfície por radar.
+- **Galáxias:** o botão destaca os braços. **Teia:** realça ou recolhe o traçado dos filamentos.
+
+As texturas são incorporadas em `assets/textures/maps.js` para permitir uso direto por `file://`, sem depender de CORS ou de serviços externos. A procedência e as licenças estão em `assets/textures/SOURCES.md`.
+
+A rotação é educativa e acelerada. Não há simulação de órbitas, relatividade ou evolução real do cosmos. Superfícies procedurais não representam mapas exatos; cores e iluminação são aproximadas. Mapas históricos da NASA podem ter cores processadas. Galáxias, teia, estrelas e horizonte são representações artísticas. O universo observável não possui uma borda física demonstrada.
+
+Com movimento reduzido, os objetos começam parados. O visitante pode iniciar a rotação explicitamente. O renderizador é encerrado ao fechar o painel e suspende atividade em abas ocultas.
+
+![Globo interativo da Terra](docs/exploracao.jpg)
+
+## Trilha musical
+
+**Entre horizontes** é uma composição/gravação original sintetizada para esta obra. Não utiliza samples, gravações, temas ou melodias de filmes. Piano, sustentação harmônica, ecos e pulsação criam uma atmosfera contemplativa com desenho musical próprio.
+
+O MP3 está incluído em `assets/audio`. É disponibilizado junto ao gerador sob **CC0 1.0 Universal**, conforme `assets/audio/CC0.md`; não é necessário pagar royalties desta gravação para utilizá-la no projeto. As fontes e imagens mantêm suas respectivas licenças.
+
+Sem autoplay: o áudio começa exclusivamente pelo botão, com volume inicial moderado. Há pausa, retomada e loop; ocultar a aba interrompe a reprodução. Para substituir a música, altere `AUDIO_FILE` em `script.js` e registre a licença. O processo de síntese pode ser reproduzido com Node.js e FFmpeg, mas essas ferramentas não são necessárias para usar o arquivo pronto.
+
+## Estrutura e edição
 
 ```text
-index.html              Estrutura semântica e dialogs
-style.css               Direção de arte, cenas e responsividade
-script.js               Jornada, estado, interações e som
-js/data.js              Narrativa, ciência, objetos e escalas
-assets/images/          Cenários e atlas de planetas em WebP
-assets/fonts/           Fontes locais e licenças OFL
-assets/audio/           Sua futura trilha, se quiser substituir o sintetizador
-tools/serve.mjs          Servidor local opcional, sem dependências
-tests/e2e.cjs            Teste de navegador opcional
-BRIEFING_TARS_V1.md      Referência do projeto
+index.html                 Estrutura, HUD e dialogs acessíveis
+style.css                  Direção de arte base e capítulos
+css/experience.css         Transmissão, escolhas, retratos e visualizador
+script.js                  Navegação, estado, controles e áudio
+js/data.js                 Ciência, narrativa e atlas
+js/profiles.js             Dez perguntas, pesos e textos de encerramento
+js/explorer.js             WebGL e alternativa Canvas2D
+assets/images/             Cenários WebP e favicon
+assets/textures/            Mapas incorporados, fontes e licença MIT
+assets/fonts/              Fontes locais e licenças OFL
+assets/audio/              Trilha original, documentação e CC0
+docs/                      Prévias da interface
+tools/serve.mjs             Servidor estático opcional
+tools/compose-audio.mjs     Gerador original da trilha
+tests/                     Verificações de navegador e de perfis
+BRIEFING_TARS_V1.md         Briefing original
 ```
 
-## Editar narrativa, imagens e áudio
+**Textos e descobertas:** edite `chapters`, `objects` e `objectDetails` em `js/data.js`. Perguntas e retratos estão em `js/profiles.js`. O posicionamento dos marcadores está em `chapters.positions`.
 
-**Textos:** edite `chapters`, `prologue`, `objects`, `objectDetails` e `scales` em `js/data.js`. O final é exibido pela lógica de `renderStory` em `script.js`; a abertura e os textos estruturais estão no HTML. Novas descobertas devem incluir fonte, fatos e reflexão separados.
+**Imagens:** a abertura usa `arrival.webp`; os capítulos referenciam os outros cenários pelo campo `image`. Prefira WebP/AVIF de 1600–1920 px, com objetos à direita e espaço escuro à esquerda para texto. Confira a licença ao substituir qualquer material. O atlas ilustrativo `planets.webp` ainda compõe os marcadores da cena solar; o visualizador usa os mapas separados.
 
-**Cenários:** substitua os WebP em `assets/images`, ou altere `image` nos capítulos. A abertura usa `arrival.webp`. Recomenda-se largura de 1600–1920 px e compressão WebP/AVIF. Os fundos privilegiam objetos à direita e espaço escuro à esquerda para texto. O atlas `planets.webp` tem Marte/Júpiter na linha superior e Saturno/Encélado na inferior; o CSS seleciona cada quadrante. A Lua tem uma composição procedural simples. Imagens de Terra, Sistema Solar, vizinhança estelar, galáxias e estruturas cósmicas podem substituir as artes; confira a licença e mantenha os créditos.
+**Modelos:** cores, modos e mapas ficam em `specs` no renderizador. O conteúdo científico deve permanecer distinguível da representação artística.
 
-**Som:** já existe uma ambientação original via Web Audio API, com camadas harmônicas, ruído filtrado e mudanças suaves entre capítulos. Não há narração falada. Som desligado no carregamento; inicia exclusivamente pelo botão e é interrompido ao ocultar a aba. Para usar uma trilha licenciada, coloque `ambiente.mp3` em `assets/audio` e preencha `AUDIO_FILE` em `script.js` com `./assets/audio/ambiente.mp3`. Registre sua licença em `assets/CREDITS.md`.
+**Som:** o arquivo pronto é `assets/audio/entre-horizontes.mp3`. O campo `AUDIO_FILE` seleciona a faixa; uma string vazia permite a antiga ambientação sintetizada como alternativa.
 
-## Ciência e arte
+## Publicar
 
-A viagem é **imaginativa**, não um simulador físico ou uma viagem realizável ao limite do cosmos. Tamanhos, posições, cenas e ampliações são composições sem escala física. Os fundos e planetas são **ilustrações geradas com IA**, não astrofotografias ou reconstruções científicas precisas. Não copiar personagens ou identidade de filmes faz parte da direção de arte.
+**GitHub Pages:** em Settings → Pages, escolha Deploy from a branch, `main` e `/ (root)`. Os caminhos relativos também funcionam em `/T.A.R.S/`. Não há build ou configuração de SPA.
 
-O anel do último capítulo é uma metáfora do limite de observação, não uma imagem real do universo observável ou de um buraco negro. A ilustração em Sagittarius A\* é conceitual. A galáxia apresentada como Via Láctea é ilustrativa: não possuímos uma fotografia de nossa galáxia inteira vista de fora.
+**Netlify:** envie a pasta pelo deploy manual, ou conecte o repositório com diretório de publicação `.` e nenhum comando de build.
 
-O raio observável atual é aproximadamente 46 bilhões de anos-luz, apesar da idade de cerca de 13,8 bilhões de anos, devido à expansão do espaço. O horizonte observável não demonstra uma borda física de todo o universo. A lente do tempo apenas visualiza uma viagem de luz: ela não simula mudanças reais na aparência da galáxia.
-
-Os painéis têm fontes de aprofundamento na NASA. Créditos e links estão em `assets/CREDITS.md` e no diálogo de créditos. Metáforas ficam na aba **O que sentimos** e são identificadas como uma leitura poética.
+Enviar os arquivos ao GitHub não ativa automaticamente a publicação do site.
 
 ## Acessibilidade e desempenho
 
-HTML semântico, controles nativos, foco visível, link de salto, títulos focados nas transições e dialogs com Escape, confinamento e retorno de foco. As abas de descoberta aceitam setas, Home e End. Sliders usam teclado nativo. A interface funciona sem som.
+Controles nativos, foco visível, link de salto, dialogs com Escape e retorno de foco, abas por teclado e perguntas em grupos de radio buttons. A experiência é compreensível sem som. `prefers-reduced-motion` é respeitado, com preferência adicional na interface.
 
-`prefers-reduced-motion` é respeitado, e há uma preferência adicional na interface. Animações usam CSS; o campo estelar só é desenhado no carregamento/redimensionamento. Paralaxe sutil de mouse usa frames sob demanda e é desativada em telas menores e movimento reduzido. Imagens e fontes são locais, totalizando aproximadamente 1,7 MB; thumbnails são carregados conforme necessário, e só o próximo cenário é pré-carregado ao viajar.
+Cenários e fontes são locais; os mapas são carregados apenas ao explorar um objeto/abrir o atlas, e a música somente após comando. Animações dos modelos usam frames sob demanda, limitam resolução e ritmo, e encerram os recursos gráficos quando o painel fecha. O campo estelar de fundo é redesenhado somente ao carregar ou redimensionar.
 
-## Validação de navegador
+## Verificar
 
-A aplicação não precisa de dependências. Para executar o teste automatizado opcional, instale Playwright somente como ferramenta de desenvolvimento:
+A aplicação não precisa de dependências. O teste de retratos usa apenas Node.js:
+
+```sh
+node --test tests/profiles.test.cjs
+```
+
+Para os testes opcionais de navegador:
 
 ```sh
 npm install --no-save --package-lock=false playwright
@@ -97,6 +134,9 @@ npx playwright install chromium
 node tools/serve.mjs
 # Em outro terminal:
 node tests/e2e.cjs
+node tests/experience.e2e.cjs
 ```
 
-O teste cobre percurso narrativo, bloqueio do mapa, descobertas, foco, abas, zoom, caderno e exportação, escala, lente temporal, áudio, retomada, reinício e responsividade. Para usar um Chromium já instalado, defina `CHROMIUM_PATH`. Para um servidor em outra porta, use `TARS_BASE_URL`. Ele não publica ou envia dados.
+Use `CHROMIUM_PATH` para um Chromium já instalado e `TARS_BASE_URL` para outro servidor/porta. As capturas ficam em `test-results`, ignorado pelo Git.
+
+As verificações cobrem jornada completa, mapas bloqueados, responsividade de 320 a 1440 px, foco, perguntas, resultados, revisão/retomada/exportação, planetas, interação 3D, alternativa sem WebGL, reprodução real do MP3 e ausência de autoplay. Fontes e créditos científicos/artísticos estão em `assets/CREDITS.md`.

@@ -5,7 +5,7 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 const arrow =
   '<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>';
 const pad = (number) => String(number).padStart(2, "0");
-const STORAGE_KEY = "tars-journey-v2";
+const STORAGE_KEY = "tars-journey-v3";
 const state = {
   current: 0,
   unlocked: 0,
@@ -13,11 +13,13 @@ const state = {
   beats: [0, 0, 0, 0, 0, 0],
   visited: [],
   bookmarks: [],
+  answers: {},
 };
 let changingChapter = false,
   discoveryId = null,
   prologueStep = 0,
   toastTimer;
+let explorer = null;
 const reducedQuery = matchMedia("(prefers-reduced-motion: reduce)");
 let manualReducedMotion = false;
 function reducedMotion() {
@@ -46,6 +48,16 @@ function restore() {
       Math.min(Math.trunc(Number(saved.current) || 0), saved.unlocked),
     );
     state.started = !!saved.started;
+    if (saved.answers && typeof saved.answers === "object") {
+      for (const q of TARSProfiles.questions) {
+        const value = saved.answers[q.id];
+        if (
+          q.chapter <= saved.unlocked &&
+          (value === "skip" || (Number.isInteger(value) && q.options[value]))
+        )
+          state.answers[q.id] = value;
+      }
+    }
     if (Array.isArray(saved.beats))
       state.beats = chapters.map((_, i) =>
         Math.max(0, Math.min(2, Math.floor(Number(saved.beats[i]) || 0))),
@@ -90,7 +102,13 @@ function updateHome() {
   $("#begin-bottom").innerHTML =
     (state.started ? "Retomar de onde parei" : "Estou pronto para partir") +
     arrow;
-  $("#journal-count").textContent = pad(state.bookmarks.length);
+  $("#journal-count").textContent = pad(
+    state.bookmarks.length + TARSProfiles.result(state.answers).count,
+  );
+  $("#journal-open").setAttribute(
+    "aria-label",
+    `Abrir caderno: ${state.bookmarks.length} descobertas e ${TARSProfiles.result(state.answers).count} respostas`,
+  );
 }
 function renderPreview() {
   $("#chapter-preview").replaceChildren(
@@ -157,6 +175,116 @@ function revealText(element) {
     { duration: 650, easing: "ease-out" },
   );
 }
+function currentQuestion() {
+  return TARSProfiles.questions.find(
+    (q) => q.chapter === state.current && q.beat === state.beats[state.current],
+  );
+}
+function updateQuestionFeedback(question) {
+  const selected = state.answers[question.id];
+  const answered = Number.isInteger(selected);
+  $("#question-panel").classList.toggle("question-answered", answered);
+  $("#question-feedback").textContent = answered
+    ? "Sinal registrado. A voz parece reconhecer algo em você."
+    : selected === "skip"
+      ? "O silêncio também tem lugar nesta viagem."
+      : "Uma escolha sua deixa um sinal nesta viagem.";
+  $("#skip-question").setAttribute("aria-pressed", String(selected === "skip"));
+  updateHome();
+}
+function renderQuestion() {
+  const q = currentQuestion();
+  $("#question-panel").hidden = !q;
+  if (!q) {
+    delete $("#question-panel").dataset.question;
+    return;
+  }
+  $("#question-panel").dataset.question = q.id;
+  $("#question-title").textContent = q.text;
+  $("#question-number").textContent =
+    `PERGUNTA ${pad(TARSProfiles.questions.indexOf(q) + 1)} / 10 · RESPONDA OU CONTINUE OBSERVANDO`;
+  $("#question-options").replaceChildren(
+    ...q.options.map((option, index) => {
+      const label = document.createElement("label");
+      label.className = "question-option";
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = q.id;
+      input.value = String(index);
+      input.checked = state.answers[q.id] === index;
+      input.addEventListener("change", () => {
+        state.answers[q.id] = index;
+        persist();
+        updateQuestionFeedback(q);
+      });
+      const text = document.createElement("span");
+      text.textContent = option.label;
+      label.append(input, text);
+      return label;
+    }),
+  );
+  updateQuestionFeedback(q);
+}
+function renderPortrait(visible) {
+  $("#profile-result").hidden = !visible;
+  if (!visible) return;
+  const result = TARSProfiles.result(state.answers);
+  $("#profile-result").dataset.kind = result.kind;
+  $("#profile-count").textContent = `${result.count} / 10 ESCOLHAS REGISTRADAS`;
+  $("#profile-name").textContent = result.name;
+  $("#profile-title").textContent = result.title;
+  $("#profile-text").textContent = result.text;
+  $("#profile-secondary").textContent = result.secondary;
+  $("#profile-secondary").hidden = !result.secondary;
+  $("#profile-invitation").textContent = result.invitation;
+  $("#profile-evidence").hidden = result.records.length < 3;
+  if (result.records.length >= 3)
+    $("#profile-evidence").textContent =
+      `Você escolheu “${result.records[0].answer}” e levou consigo “${result.records.at(-1).answer}”. Este retrato nasce desses sinais.`;
+}
+function renderJournalAnswers() {
+  const root = $("#journal-answers");
+  root.replaceChildren();
+  const heading = document.createElement("h3");
+  heading.textContent = "As perguntas que ficaram com você.";
+  root.append(heading);
+  const known = TARSProfiles.questions.filter(
+    (q) =>
+      q.chapter < state.unlocked ||
+      (state.started &&
+        q.chapter === state.current &&
+        q.beat <= state.beats[q.chapter]) ||
+      Object.hasOwn(state.answers, q.id),
+  );
+  if (!known.length) {
+    const p = document.createElement("p");
+    p.className = "storage-note";
+    p.textContent =
+      "As perguntas aparecem ao longo das transmissões. Responda apenas se quiser.";
+    root.append(p);
+  }
+  known.forEach((q) => {
+    const button = document.createElement("button");
+    button.className = "journal-answer";
+    const selected = q.options[state.answers[q.id]];
+    const number = document.createElement("small"),
+      title = document.createElement("strong"),
+      answer = document.createElement("span");
+    number.textContent = `PERGUNTA ${pad(TARSProfiles.questions.indexOf(q) + 1)} / HORIZONTE ${pad(q.chapter + 1)}`;
+    title.textContent = q.text;
+    answer.textContent = selected
+      ? `Você escolheu: ${selected.label}`
+      : "Você deixou este sinal em aberto. Pode revisitar.";
+    button.append(number, title, answer);
+    button.setAttribute("aria-label", `Revisitar pergunta: ${q.text}`);
+    button.addEventListener("click", () => {
+      $("#journal-dialog").close();
+      state.beats[q.chapter] = q.beat;
+      goChapter(q.chapter);
+    });
+    root.append(button);
+  });
+}
 function renderStory(focus = false) {
   const chapter = chapters[state.current],
     beat = state.beats[state.current],
@@ -189,6 +317,8 @@ function renderStory(focus = false) {
   );
   $("#final-reflection").hidden = !revealed;
   $("#easter-egg").hidden = !revealed;
+  renderQuestion();
+  renderPortrait(revealed);
   let label;
   if (revealed) label = "Reiniciar a jornada";
   else if (state.current === 5 && beat === 1) label = "De onde vem a voz?";
@@ -229,6 +359,7 @@ async function goChapter(index, { transition = true } = {}) {
   $("#chapter-location").textContent = chapter.location.toUpperCase();
   $("#scene-hint").textContent = chapter.hint;
   $("#time-lens").hidden = index !== 4;
+  $("#atlas-open").hidden = index !== 1;
   document.body.classList.remove("contemplating");
   $("#contemplate").setAttribute("aria-pressed", "false");
   $("#contemplate span").textContent = "Contemplar";
@@ -264,6 +395,7 @@ function resetJourney() {
     beats: [0, 0, 0, 0, 0, 0],
     visited: [],
     bookmarks: [],
+    answers: {},
   });
   $("#takeaway").value = "";
   persist();
@@ -295,10 +427,24 @@ function finishPrologue() {
 }
 function next() {
   if (changingChapter) return;
+  const question = currentQuestion();
+  if (question && !Object.hasOwn(state.answers, question.id)) {
+    state.answers[question.id] = "skip";
+    persist();
+  }
   if (state.beats[state.current] < 2) {
     state.beats[state.current]++;
     persist();
     renderStory();
+    const target =
+      state.current === 5 && state.beats[5] === 2
+        ? $("#chapter-title")
+        : $("#narrative");
+    if (target.getBoundingClientRect().top < 0)
+      target.scrollIntoView({
+        block: "start",
+        behavior: reducedMotion() ? "instant" : "smooth",
+      });
   } else if (state.current < 5) {
     state.unlocked = Math.max(state.unlocked, state.current + 1);
     goChapter(state.current + 1);
@@ -334,28 +480,93 @@ function openMap() {
     (state.started ? "Continuar jornada" : "Iniciar jornada") + arrow;
   openDialog("map-dialog");
 }
-function portraitFor(id) {
-  const art = objectDetails[id].art;
-  if (
-    [
-      "mars",
-      "jupiter",
-      "saturn",
-      "enceladus",
-      "red-star",
-      "blue-star",
-    ].includes(art)
-  )
-    return `<div class="planet-thumb ${art}"></div>`;
-  const portrait = {
-    earth: "earth",
-    moon: "moon",
-    galaxy: "galaxy",
-    blackhole: "horizon",
-    horizon: "horizon",
-    web: "web",
-  }[art];
-  return `<div class="${portrait}-portrait"></div>`;
+function mountExplorer(id) {
+  if (explorer) explorer.destroy();
+  const canvas = document.createElement("canvas");
+  canvas.id = "object-canvas";
+  canvas.className = "object-canvas";
+  canvas.tabIndex = 0;
+  canvas.setAttribute("role", "img");
+  canvas.setAttribute(
+    "aria-label",
+    `Visualização interativa de ${objects[id].name}`,
+  );
+  canvas.setAttribute("aria-describedby", "viewer-help");
+  canvas.textContent = `Use os controles para girar e aproximar ${objects[id].name}.`;
+  $("#discovery-art").replaceChildren(canvas);
+  explorer = new TARSExplorer(canvas, {
+    id,
+    reduced: reducedMotion(),
+    onChange: updateViewer,
+  });
+}
+function updateViewer(info) {
+  $("#discovery-zoom").value = String(Math.round(info.zoom * 100));
+  $("#zoom-value").textContent = info.zoom.toFixed(1).replace(".", ",") + "×";
+  $("#viewer-spin").setAttribute("aria-pressed", String(info.auto));
+  $("#viewer-spin").textContent = info.auto
+    ? "Pausar rotação"
+    : "Iniciar rotação";
+  $("#viewer-detail").setAttribute("aria-pressed", String(info.detail));
+  const caption =
+    discoveryId === "venus"
+      ? info.detail
+        ? "Ver nuvens"
+        : "Ver superfície"
+      : info.mode === "web"
+        ? info.detail
+          ? "Ocultar traçado"
+          : "Traçar filamentos"
+        : info.mode === "galaxy"
+          ? info.detail
+            ? "Ocultar braços"
+            : "Traçar braços"
+          : info.mode === "horizon"
+            ? "Destacar horizonte"
+            : ["proxima", "sirio"].includes(discoveryId)
+              ? "Revelar granulação"
+              : discoveryId === "sagitario"
+                ? "Realçar disco"
+                : "Luz difusa";
+  $("#viewer-detail").textContent = caption;
+  $("#viewer-orientation").textContent =
+    info.engine === "context-lost"
+      ? "VISUALIZAÇÃO INTERROMPIDA · RESTAURE OU REABRA O OBJETO"
+      : `VISTA ${Math.round((info.yaw * 180) / Math.PI)}° · INCLINAÇÃO ${Math.round((info.pitch * 180) / Math.PI)}°`;
+  $("#viewer-note").textContent =
+    discoveryId === "venus" && info.detail
+      ? "Superfície NASA por radar · cores representativas"
+      : info.note;
+}
+function openAtlas() {
+  if (state.unlocked < 1) return;
+  $("#atlas-worlds").replaceChildren(
+    ...solarAtlas.map((id, index) => {
+      const button = document.createElement("button");
+      button.className = "atlas-world";
+      button.dataset.world = id;
+      button.setAttribute(
+        "aria-label",
+        `Explorar ${objects[id].name} no atlas`,
+      );
+      button.innerHTML = `<span class="atlas-orb ${id}" aria-hidden="true"></span><strong>${objects[id].name}</strong><small>SOL ${pad(index + 1)} / EXPLORAR</small><svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg>`;
+      button.addEventListener("click", () => discover(id));
+      return button;
+    }),
+  );
+  openDialog("solar-atlas-dialog");
+  TARSExplorer.loadMaps()
+    .then((maps) => {
+      solarAtlas.forEach((id) => {
+        const orb = $(`[data-world="${id}"] .atlas-orb`);
+        if (orb && maps[id]) orb.style.backgroundImage = `url("${maps[id]}")`;
+      });
+    })
+    .catch(() =>
+      toast(
+        "Os mapas não carregaram. A exploração procedural continua disponível.",
+      ),
+    );
 }
 function selectTab(name, { focus = false } = {}) {
   const facts = name === "facts";
@@ -401,7 +612,7 @@ function discover(id) {
     "",
   );
   $("#reflection-question").textContent = detail.question;
-  $("#discovery-art").innerHTML = portraitFor(id);
+
   $("#discovery-art").style.setProperty("--zoom", "1");
   $("#discovery-zoom").value = "100";
   $("#zoom-value").textContent = "1,0×";
@@ -421,6 +632,7 @@ function discover(id) {
   updateBookmark();
   openDialog("discovery-dialog");
   $("#discovery-dialog").scrollTop = 0;
+  mountExplorer(id);
 }
 function openJournal() {
   $("#journal-items").replaceChildren();
@@ -442,7 +654,9 @@ function openJournal() {
       button.addEventListener("click", () => discover(id));
       $("#journal-items").append(button);
     });
-  $("#download-journal").disabled = !state.bookmarks.length;
+  renderJournalAnswers();
+  $("#download-journal").disabled =
+    !state.bookmarks.length && !TARSProfiles.result(state.answers).count;
   openDialog("journal-dialog");
 }
 function downloadText(filename, text) {
@@ -458,12 +672,21 @@ function downloadText(filename, text) {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 function journalText() {
-  return state.bookmarks
+  const discoveries = state.bookmarks
     .map(
       (id) =>
         `${objects[id].name}\n${objects[id].description}\n${objects[id].reflection}\nFonte: ${objects[id].source}`,
     )
     .join("\n\n────────────────────\n\n");
+  const result = TARSProfiles.result(state.answers);
+  const answers = result.records
+    .map((record) => `${record.question}\nSua escolha: ${record.answer}`)
+    .join("\n\n");
+  const portrait =
+    state.beats[5] === 2
+      ? `\n\nRETRATO DESTA VIAGEM\n${result.name}\n${result.title}\n${result.text}\n${result.secondary}\n${result.invitation}\nUm retrato narrativo, não uma definição de personalidade.`
+      : "";
+  return `${discoveries}${answers ? "\n\nAS ESCOLHAS QUE VOCÊ LEVA\n\n" + answers : ""}${portrait}`;
 }
 function updateScale() {
   const index = Number($("#scale-range").value),
@@ -556,9 +779,30 @@ $(".discovery-tabs").addEventListener("keydown", (event) => {
   }
 });
 $("#discovery-zoom").addEventListener("input", () => {
-  const zoom = Number($("#discovery-zoom").value) / 100;
-  $("#discovery-art").style.setProperty("--zoom", String(zoom));
-  $("#zoom-value").textContent = zoom.toFixed(1).replace(".", ",") + "×";
+  if (explorer) explorer.setZoom(Number($("#discovery-zoom").value) / 100);
+});
+$("#viewer-left").addEventListener("click", () => explorer?.turn(-0.18));
+$("#viewer-right").addEventListener("click", () => explorer?.turn(0.18));
+$("#viewer-spin").addEventListener("click", () => explorer?.toggleAuto());
+$("#viewer-detail").addEventListener("click", () => explorer?.toggleDetail());
+$("#viewer-reset").addEventListener("click", () => explorer?.reset());
+$("#atlas-open").addEventListener("click", openAtlas);
+$("#review-answers").addEventListener("click", openJournal);
+$("#skip-question").addEventListener("click", () => {
+  const q = currentQuestion();
+  if (!q) return;
+  state.answers[q.id] = "skip";
+  $$("#question-options input").forEach((input) => {
+    input.checked = false;
+  });
+  persist();
+  updateQuestionFeedback(q);
+});
+$("#discovery-dialog").addEventListener("close", () => {
+  if (explorer) {
+    explorer.destroy();
+    explorer = null;
+  }
 });
 $("#bookmark").addEventListener("click", () => {
   if (!discoveryId) return;
@@ -586,7 +830,7 @@ $("#save-letter").addEventListener("click", () => {
   const word = $("#takeaway").value.trim() || "curiosidade";
   downloadText(
     "TARS-carta-para-voce.txt",
-    `T.A.R.S. — Uma carta para você\n\nVocê atravessou seis horizontes.\nDa Terra ao limite do que podemos observar.\n\nA palavra que você leva: ${word}\n\nA voz nunca esteve nas estrelas. Estava na sua vontade de compreender.\nO universo ficou maior. E você também.\n\n${state.bookmarks.length ? "SEUS REGISTROS\n\n" + journalText() : ""}\n\nL.E. / ∞`,
+    `T.A.R.S. — Uma carta para você\n\nVocê atravessou seis horizontes.\nDa Terra ao limite do que podemos observar.\n\nA palavra que você leva: ${word}\n\nA voz nunca esteve nas estrelas. Estava na sua vontade de compreender.\nO universo ficou maior. E você também.\n\n${journalText()}\n\nL.E. / ∞`,
   );
   toast("Sua viagem foi guardada em uma carta.");
 });
@@ -620,6 +864,11 @@ $("#motion-toggle").checked = reducedQuery.matches;
 $("#motion-toggle").addEventListener("change", () => {
   manualReducedMotion = $("#motion-toggle").checked;
   document.body.classList.toggle("reduced-motion", manualReducedMotion);
+  if (explorer) {
+    explorer.reduced = reducedMotion();
+    if (explorer.reduced) explorer.auto = false;
+    explorer.update();
+  }
 });
 $("#fullscreen").addEventListener("click", async () => {
   try {
@@ -633,7 +882,7 @@ $("#fullscreen").addEventListener("click", async () => {
 });
 // Ambientação original: drone harmônico, ruído filtrado e modulação muito lenta.
 // Para uma trilha licenciada, preencha AUDIO_FILE com './assets/audio/ambiente.mp3'.
-const AUDIO_FILE = "";
+const AUDIO_FILE = "assets/audio/entre-horizontes.mp3";
 let audioContext,
   masterGain,
   soundtrack,
